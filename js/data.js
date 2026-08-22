@@ -1,0 +1,1173 @@
+/* ZADA Yearbook — data layer (Firestore backend)
+
+   SCHEMA:
+   - schools/{schoolId}          -> public metadata only: school, level,
+                                     palette, cover, hasPassword (bool),
+                                     editions (array) IF NOT protected,
+                                     progress (object) IF NOT protected.
+                                     If protected, `editions` here is [] and
+                                     `progress` here is null.
+   - protected/{schoolId}__{hash} -> only exists for protected schools.
+                                     doc id embeds SHA-256(password), so a
+                                     visitor can only fetch this document if
+                                     they already know the correct password
+                                     (which produces the same hash). Content:
+                                     { editions: [...], progress: {...} }.
+                                     `progress` is the 6-tahap workflow status
+                                     (lihat PROGRESS_STAGES) shown on the
+                                     separate "Perkembangan" page, gated by
+                                     the same school password.
+   - admin_meta/{schoolId}        -> admin-only bookkeeping (current hash),
+                                     readable/writable only when signed in.
+                                     Never exposed to public visitors.
+
+   This means: the raw password is never written to any document, and the
+   editions/progress content of a protected school cannot be read unless the
+   visitor already supplies the exact password (client hashes it, then
+   requests the matching document path). There is no plaintext password
+   sitting in the database or in the page's JS for someone to just look at. */
+
+/* Every spine/cover gradient is built only from the site's own Color Hunt
+   palette (navy / blue / sky / mint + their deep & bright siblings) so the
+   shelf and cards always read as "one family" with the rest of the theme,
+   instead of a rainbow of unrelated hues. */
+const COVER_PALETTES = [
+  { base: "linear-gradient(155deg,#293681,#4274D9)", accent: "#D0E7E6", name: "navy-blue" },
+  { base: "linear-gradient(155deg,#4274D9,#95CCDD)", accent: "#0A0E2B", name: "blue-sky" },
+  { base: "linear-gradient(155deg,#131A4A,#293681)", accent: "#D0E7E6", name: "deep-navy" },
+  { base: "linear-gradient(155deg,#95CCDD,#D0E7E6)", accent: "#131A4A", name: "sky-mint" },
+  { base: "linear-gradient(155deg,#293681,#6F97EA)", accent: "#D0E7E6", name: "navy-brightblue" },
+  { base: "linear-gradient(155deg,#6F97EA,#95CCDD)", accent: "#0A0E2B", name: "brightblue-sky" },
+  { base: "linear-gradient(155deg,#131A4A,#4274D9)", accent: "#D0E7E6", name: "deepnavy-blue" },
+  { base: "linear-gradient(155deg,#4274D9,#D0E7E6)", accent: "#0A0E2B", name: "blue-mint" },
+  { base: "linear-gradient(155deg,#293681,#95CCDD)", accent: "#D0E7E6", name: "navy-sky" },
+  { base: "linear-gradient(155deg,#131A4A,#6F97EA)", accent: "#D0E7E6", name: "deepnavy-brightblue" },
+];
+
+/* ------------------------------------------------------------------ */
+/* Produksi buku tahunan — 6 tahap resmi alur kerja ZADA.              */
+/* Tahap 5 (cetak) bersifat kondisional: hanya relevan jika sekolah    */
+/* memilih paket cetak fisik.                                          */
+/* ------------------------------------------------------------------ */
+const PROGRESS_STAGES = [
+  {
+    key: "konsep",
+    order: 1,
+    title: "Konsep & Konsultasi",
+    desc: "Menentukan tema sampul, gaya fotografi, dan struktur halaman bersama pihak sekolah.",
+  },
+  {
+    key: "produksi",
+    order: 2,
+    title: "Produksi",
+    desc: "Fotografi studio & kandid, pengambilan dokumentasi kegiatan, serta kurasi data siswa.",
+  },
+  {
+    key: "revisi",
+    order: 3,
+    title: "Revisi",
+    desc: "Draf tata letak dikirim ke sekolah untuk dicek dan direvisi sebelum difinalisasi.",
+  },
+  {
+    key: "flipbook",
+    order: 4,
+    title: "Publikasi Flipbook",
+    desc: "Buku final diterbitkan sebagai flipbook interaktif melalui AnyFlip.",
+  },
+  {
+    key: "cetak",
+    order: 5,
+    title: "Publikasi Cetakan",
+    desc: "Opsional — dicetak fisik jika sekolah memilih paket cetak.",
+    optional: true,
+  },
+  {
+    key: "arsip",
+    order: 6,
+    title: "Pengarsipan",
+    desc: "Buku dan seluruh berkas disimpan permanen sebagai arsip digital resmi ZADA.",
+  },
+];
+
+/* Helper functions for book themes */
+function parseThemes(themesInput) {
+  if (!themesInput) return [];
+  if (Array.isArray(themesInput)) {
+    return themesInput
+      .flatMap((item) => (typeof item === "string" ? item.split(",") : [String(item)]))
+      .map((t) => String(t).trim())
+      .filter(Boolean);
+  }
+  if (typeof themesInput === "string") {
+    return themesInput.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function getEditionThemes(edition) {
+  if (!edition) return [];
+  const list = [];
+  if (edition.themes) {
+    parseThemes(edition.themes).forEach((t) => {
+      if (t && !list.includes(t)) list.push(t);
+    });
+  }
+  if (edition.theme) {
+    parseThemes(edition.theme).forEach((t) => {
+      if (t && !list.includes(t)) list.push(t);
+    });
+  }
+  if (edition.category && typeof edition.category === "string" && edition.category.trim()) {
+    const cat = edition.category.trim();
+    if (!list.includes(cat)) list.push(cat);
+  }
+  return list.length ? list : ["Tema Kustom"];
+}
+
+function getSchoolThemes(school) {
+  if (!school) return [];
+  const list = [];
+  if (school.themes) {
+    parseThemes(school.themes).forEach((t) => {
+      if (t && !list.includes(t)) list.push(t);
+    });
+  }
+  if (school.publicThemes) {
+    parseThemes(school.publicThemes).forEach((t) => {
+      if (t && !list.includes(t)) list.push(t);
+    });
+  }
+  (school.editions || []).forEach((ed) => {
+    getEditionThemes(ed).forEach((t) => {
+      if (t && !list.includes(t)) list.push(t);
+    });
+  });
+  return list;
+}
+
+const DEFAULT_INITIAL_SCHOOLS = [
+  {
+    id: "sma-1-jakarta",
+    school: "SMA Negeri 1 Jakarta",
+    level: "SMA",
+    palette: 0,
+    cover: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop",
+    hasPassword: false,
+    themes: ["Vintage Retro", "Casual Streetwear", "Cyberpunk Neo", "Monochrome Studio", "Classic Editorial", "Earthy Nature"],
+    publicThemes: ["Vintage Retro", "Casual Streetwear", "Cyberpunk Neo", "Monochrome Studio", "Classic Editorial", "Earthy Nature"],
+    editionCount: 3,
+    editions: [
+      {
+        id: "ed-1",
+        year: 2026,
+        themes: ["Vintage Retro", "Casual Streetwear"],
+        category: "Vintage Retro",
+        title: "Adhisti Pratama — Angkatan 65",
+        summary: "Konsep perpaduan nuansa hangat 90s Vintage Retro dan gaya kasual streetwear modern.",
+        students: 280,
+        cover: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      },
+      {
+        id: "ed-2",
+        year: 2025,
+        themes: ["Cyberpunk Neo", "Monochrome Studio"],
+        category: "Cyberpunk Neo",
+        title: "Nirwana Cahya — Angkatan 64",
+        summary: "Eksplorasi visual futuristik neon berkarakter dan potret studio monokrom tajam.",
+        students: 275,
+        cover: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      },
+      {
+        id: "ed-3",
+        year: 2024,
+        themes: ["Classic Editorial", "Earthy Nature"],
+        category: "Classic Editorial",
+        title: "Gita Mandala — Angkatan 63",
+        summary: "Tema majalah editorial elegan berlatar alam terbuka dan busana formal classy.",
+        students: 260,
+        cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      }
+    ],
+    progress: {
+      currentStage: 4,
+      printOrdered: true,
+      completed: false,
+      note: "Draf buku telah disetujui, saat ini dalam proses publikasi flipbook.",
+      pic: "Tim Desain & Produksi ZADA",
+      statusBadge: "Lancar",
+      updatedAt: "2026-08-15T10:00:00Z"
+    }
+  },
+  {
+    id: "smp-labschool-kebayoran",
+    school: "SMP Labschool Kebayoran",
+    level: "SMP",
+    palette: 1,
+    cover: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop",
+    hasPassword: false,
+    themes: ["Pop Art Pastel", "Korean Aesthetic", "Old Money Classic", "Casual Streetwear"],
+    publicThemes: ["Pop Art Pastel", "Korean Aesthetic", "Old Money Classic", "Casual Streetwear"],
+    editionCount: 2,
+    editions: [
+      {
+        id: "ed-4",
+        year: 2026,
+        themes: ["Pop Art Pastel", "Korean Aesthetic"],
+        category: "Pop Art Pastel",
+        title: "Kembara Bhakti — Angkatan 23",
+        summary: "Tema penuh warna ceria pastel dipadukan estetika Korean look yang youthful.",
+        students: 210,
+        cover: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      },
+      {
+        id: "ed-5",
+        year: 2025,
+        themes: ["Old Money Classic", "Casual Streetwear"],
+        category: "Old Money Classic",
+        title: "Ananta Swasti — Angkatan 22",
+        summary: "Konsep busana formal klasik old money dan potret outdoor ceria bersama angkatan.",
+        students: 195,
+        cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      }
+    ],
+    progress: {
+      currentStage: 3,
+      printOrdered: true,
+      completed: false,
+      note: "Tahap revisi tata letak oleh komite sekolah.",
+      pic: "Tim Produksi ZADA",
+      statusBadge: "Lancar",
+      updatedAt: "2026-08-16T14:00:00Z"
+    }
+  },
+  {
+    id: "sma-al-azhar-1-jakarta",
+    school: "SMA Islam Al Azhar 1",
+    level: "SMA",
+    palette: 2,
+    cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+    hasPassword: false,
+    themes: ["Minimalist Monochromatic", "Royal Navy Luxury", "Vintage Retro", "Formal Gala"],
+    publicThemes: ["Minimalist Monochromatic", "Royal Navy Luxury", "Vintage Retro", "Formal Gala"],
+    editionCount: 2,
+    editions: [
+      {
+        id: "ed-6",
+        year: 2026,
+        themes: ["Minimalist Monochromatic", "Royal Navy Luxury"],
+        category: "Royal Navy Luxury",
+        title: "Gautama Arkan — Angkatan 38",
+        summary: "Tema minimalis monokromatik modern berpadu aksen navy emas kebanggaan sekolah.",
+        students: 240,
+        cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      },
+      {
+        id: "ed-7",
+        year: 2025,
+        themes: ["Vintage Retro", "Formal Gala"],
+        category: "Vintage Retro",
+        title: "Baskara Yudha — Angkatan 37",
+        summary: "Tema retro nostalgia dikombinasikan potret formal gala graduation penuh memori.",
+        students: 235,
+        cover: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1200&auto=format&fit=crop",
+        flipbookUrl: "https://anyflip.com"
+      }
+    ],
+    progress: {
+      currentStage: 2,
+      printOrdered: true,
+      completed: false,
+      note: "Sesi foto on-location & pemotretan kelas selesai.",
+      pic: "Tim Fotografer ZADA",
+      statusBadge: "Lancar",
+      updatedAt: "2026-08-18T09:30:00Z"
+    }
+  }
+];
+
+function defaultProgress() {
+  return {
+    currentStage: 1,
+    printOrdered: false,
+    completed: false,
+    note: "",
+    pic: "Tim Produksi ZADA",
+    statusBadge: "Lancar",
+    teamReport: "",
+    teamReports: [],
+    updatedAt: null
+  };
+}
+
+const ZadaData = {
+  async getAllSchools() {
+    let schools = [];
+    try {
+      if (typeof db !== "undefined" && db) {
+        const fetchPromise = db.collection("schools").get();
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Firestore schools timeout")), 3500)
+        );
+        const snap = await Promise.race([fetchPromise, timeoutPromise]);
+        if (!snap.empty) {
+          schools = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          try {
+            localStorage.setItem("zada_schools_cache", JSON.stringify(schools));
+          } catch (e) {}
+          return schools;
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore schools fetch fallback to cache:", e);
+    }
+
+    try {
+      const cached = localStorage.getItem("zada_schools_cache");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      }
+    } catch (e) {}
+
+    return DEFAULT_INITIAL_SCHOOLS;
+  },
+
+  async getSchoolById(id) {
+    if (!id) return null;
+    const targetId = String(id).trim();
+    try {
+      if (typeof db !== "undefined" && db) {
+        const fetchPromise = db.collection("schools").doc(targetId).get();
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Firestore school timeout")), 3500)
+        );
+        const doc = await Promise.race([fetchPromise, timeoutPromise]);
+        if (doc.exists) {
+          return { id: doc.id, ...doc.data() };
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore getSchoolById fallback to cache for id:", targetId, e);
+    }
+
+    const all = await this.getAllSchools();
+    return all.find((s) => String(s.id).trim() === targetId) || null;
+  },
+
+  /* Attempt to unlock a protected school's portal (editions + progress)
+     with a candidate password. Returns { editions, progress } on success,
+     or null on failure. The check happens by trying to fetch a document
+     whose ID embeds the hash of the candidate password — Firestore itself
+     is the verifier. */
+  async tryUnlockPortal(schoolId, candidatePassword) {
+    const hash = await sha256Hex(candidatePassword);
+    const doc = await db.collection("protected").doc(`${schoolId}__${hash}`).get();
+    if (!doc.exists) return null;
+    const data = doc.data();
+    return { editions: data.editions || [], progress: data.progress || defaultProgress() };
+  },
+
+  /* --- Admin-only writes below. Firestore rules require an authenticated
+     admin session for all of these; see firestore.rules. --- */
+
+  async addSchool(school) {
+    const { id, password, editions, progress, themes, publicThemes, ...meta } = school;
+    const hasPassword = Boolean(password);
+    const parsedThemes = parseThemes(themes || publicThemes || (editions ? getSchoolThemes({ editions }) : []));
+    const docData = {
+      ...meta,
+      hasPassword,
+      themes: parsedThemes,
+      publicThemes: parsedThemes,
+      editions: hasPassword ? [] : editions || [],
+      editionCount: (editions || []).length,
+      progress: hasPassword ? null : progress || defaultProgress(),
+    };
+
+    try {
+      if (typeof db !== "undefined" && db) {
+        await db.collection("schools").doc(id).set(docData);
+        if (hasPassword) {
+          await this._writeProtectedData(id, password, {
+            editions: editions || [],
+            progress: progress || defaultProgress(),
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore addSchool fallback to cache:", e);
+    }
+
+    try {
+      const cached = localStorage.getItem("zada_schools_cache");
+      let list = cached ? JSON.parse(cached) : [...DEFAULT_INITIAL_SCHOOLS];
+      list = list.filter((s) => s.id !== id);
+      list.unshift({ id, ...docData, editions: editions || [] });
+      localStorage.setItem("zada_schools_cache", JSON.stringify(list));
+    } catch (e) {}
+
+    return school;
+  },
+
+  async updateSchool(id, patch) {
+    const current = await this.getSchoolById(id);
+    if (!current) return false;
+
+    const { password, editions, progress, themes, publicThemes, ...metaPatch } = patch;
+    const nowHasPassword = password !== undefined ? Boolean(password) : current.hasPassword;
+
+    let currentEditions = current.editions || [];
+    let currentProgress = current.progress || defaultProgress();
+    if (current.hasPassword) {
+      try {
+        if (typeof db !== "undefined" && db) {
+          const meta = await db.collection("admin_meta").doc(id).get();
+          if (meta.exists && meta.data().hash) {
+            const prot = await db.collection("protected").doc(`${id}__${meta.data().hash}`).get();
+            currentEditions = prot.exists ? prot.data().editions : [];
+            currentProgress = prot.exists ? prot.data().progress || defaultProgress() : defaultProgress();
+          }
+        }
+      } catch (e) {}
+    }
+    const nextEditions = editions !== undefined ? editions : currentEditions;
+    const nextProgress = progress !== undefined ? progress : currentProgress;
+
+    const themeSource = themes !== undefined ? themes : (publicThemes !== undefined ? publicThemes : (current.themes || current.publicThemes));
+    const parsedThemes = parseThemes(themeSource || []);
+    const finalThemes = parsedThemes.length ? parsedThemes : getSchoolThemes({ editions: nextEditions });
+
+    const docData = {
+      ...metaPatch,
+      hasPassword: nowHasPassword,
+      themes: finalThemes,
+      publicThemes: finalThemes,
+      editions: nowHasPassword ? [] : nextEditions,
+      editionCount: nextEditions.length,
+      progress: nowHasPassword ? null : nextProgress,
+    };
+
+    try {
+      if (typeof db !== "undefined" && db) {
+        await db.collection("schools").doc(id).set(docData, { merge: true });
+
+        if (nowHasPassword) {
+          if (password) {
+            await this._writeProtectedData(id, password, { editions: nextEditions, progress: nextProgress });
+          } else if (editions !== undefined || progress !== undefined) {
+            const meta = await db.collection("admin_meta").doc(id).get();
+            if (meta.exists && meta.data().hash) {
+              await db
+                .collection("protected")
+                .doc(`${id}__${meta.data().hash}`)
+                .set({ editions: nextEditions, progress: nextProgress });
+            }
+          }
+        } else {
+          await this._clearProtectedData(id);
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore updateSchool fallback:", e);
+    }
+
+    try {
+      const cached = localStorage.getItem("zada_schools_cache");
+      let list = cached ? JSON.parse(cached) : [...DEFAULT_INITIAL_SCHOOLS];
+      const idx = list.findIndex((s) => s.id === id);
+      if (idx !== -1) {
+        list[idx] = { ...list[idx], ...docData, editions: nextEditions };
+      }
+      localStorage.setItem("zada_schools_cache", JSON.stringify(list));
+    } catch (e) {}
+
+    return true;
+  },
+
+  async _writeProtectedData(schoolId, password, { editions, progress }) {
+    const hash = await sha256Hex(password);
+    await this._clearProtectedData(schoolId);
+    await db.collection("protected").doc(`${schoolId}__${hash}`).set({ editions, progress });
+    await db.collection("admin_meta").doc(schoolId).set({ hash });
+  },
+
+  async _clearProtectedData(schoolId) {
+    const meta = await db.collection("admin_meta").doc(schoolId).get();
+    if (meta.exists && meta.data().hash) {
+      await db.collection("protected").doc(`${schoolId}__${meta.data().hash}`).delete();
+      await db.collection("admin_meta").doc(schoolId).delete();
+    }
+  },
+
+  async removeSchool(id) {
+    try {
+      if (typeof db !== "undefined" && db) {
+        await this._clearProtectedData(id);
+        await db.collection("schools").doc(id).delete();
+      }
+    } catch (e) {}
+
+    try {
+      const cached = localStorage.getItem("zada_schools_cache");
+      if (cached) {
+        let list = JSON.parse(cached);
+        list = list.filter((s) => s.id !== id);
+        localStorage.setItem("zada_schools_cache", JSON.stringify(list));
+      }
+    } catch (e) {}
+  },
+
+  async _loadPortalForAdmin(schoolId) {
+    const school = await this.getSchoolById(schoolId);
+    if (!school) return { school: null, editions: [], progress: defaultProgress() };
+    if (!school.hasPassword) {
+      return { school, editions: school.editions || [], progress: school.progress || defaultProgress() };
+    }
+    const meta = await db.collection("admin_meta").doc(schoolId).get();
+    if (!meta.exists || !meta.data().hash) {
+      return { school, editions: [], progress: defaultProgress() };
+    }
+    const prot = await db.collection("protected").doc(`${schoolId}__${meta.data().hash}`).get();
+    return {
+      school,
+      editions: prot.exists ? prot.data().editions : [],
+      progress: prot.exists ? prot.data().progress || defaultProgress() : defaultProgress(),
+    };
+  },
+
+  async addEdition(schoolId, edition) {
+    const { school, editions, progress } = await this._loadPortalForAdmin(schoolId);
+    if (!school) return false;
+    const next = [edition, ...editions];
+    await this._savePortal(schoolId, school, next, progress);
+    return true;
+  },
+
+  async updateEdition(schoolId, editionId, patch) {
+    const { school, editions, progress } = await this._loadPortalForAdmin(schoolId);
+    if (!school) return false;
+    const idx = editions.findIndex((e) => e.id === editionId);
+    if (idx === -1) return false;
+    editions[idx] = { ...editions[idx], ...patch };
+    await this._savePortal(schoolId, school, editions, progress);
+    return true;
+  },
+
+  async removeEdition(schoolId, editionId) {
+    const { school, editions, progress } = await this._loadPortalForAdmin(schoolId);
+    if (!school) return false;
+    const next = editions.filter((e) => e.id !== editionId);
+    await this._savePortal(schoolId, school, next, progress);
+    return true;
+  },
+
+  /* Update the 6-tahap workflow status for a school. `patch` may include
+     currentStage (1-6), printOrdered (bool), note (string). */
+  async saveProgress(schoolId, patch) {
+    const { school, editions, progress } = await this._loadPortalForAdmin(schoolId);
+    if (!school) return false;
+    const nextProgress = {
+      ...defaultProgress(),
+      ...progress,
+      ...patch,
+      updatedAt: new Date().toISOString(),
+    };
+    await this._savePortal(schoolId, school, editions, nextProgress);
+    return true;
+  },
+
+  async _savePortal(schoolId, school, editions, progress) {
+    const combinedThemes = getSchoolThemes({ ...school, editions });
+    try {
+      if (typeof db !== "undefined" && db) {
+        if (school.hasPassword) {
+          const meta = await db.collection("admin_meta").doc(schoolId).get();
+          if (meta.exists && meta.data().hash) {
+            await db.collection("protected").doc(`${schoolId}__${meta.data().hash}`).set({ editions, progress });
+          }
+          await db.collection("schools").doc(schoolId).set({
+            editionCount: editions.length,
+            themes: combinedThemes,
+            publicThemes: combinedThemes
+          }, { merge: true });
+        } else {
+          await db.collection("schools").doc(schoolId).set({
+            editions,
+            progress,
+            editionCount: editions.length,
+            themes: combinedThemes,
+            publicThemes: combinedThemes
+          }, { merge: true });
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore _savePortal fallback to cache:", e);
+    }
+
+    try {
+      const cached = localStorage.getItem("zada_schools_cache");
+      let list = cached ? JSON.parse(cached) : [...DEFAULT_INITIAL_SCHOOLS];
+      const idx = list.findIndex((s) => s.id === schoolId);
+      if (idx !== -1) {
+        list[idx] = {
+          ...list[idx],
+          editionCount: editions.length,
+          themes: combinedThemes,
+          publicThemes: combinedThemes,
+          editions: school.hasPassword ? [] : editions,
+          progress: school.hasPassword ? null : progress
+        };
+      }
+      localStorage.setItem("zada_schools_cache", JSON.stringify(list));
+    } catch (e) {}
+  },
+
+  palette(index) {
+    return COVER_PALETTES[index % COVER_PALETTES.length];
+  },
+
+  slugFromSchool(school) {
+    return school
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  },
+
+  editionYears(schoolWithEditions) {
+    return [...(schoolWithEditions.editions || []).map((e) => e.year)].sort((a, b) => b - a);
+  },
+
+  stages() {
+    return PROGRESS_STAGES;
+  },
+
+  parseThemes,
+  getEditionThemes,
+  getSchoolThemes,
+
+  defaultProgress,
+
+  /* ------------------------------------------------------------------ */
+  /* Studio Photo Gallery Collection                                    */
+  /* ------------------------------------------------------------------ */
+  getDeletedGalleryIds() {
+    try {
+      const raw = localStorage.getItem("zada_deleted_gallery_ids");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  addDeletedGalleryId(id) {
+    if (!id) return;
+    const targetId = String(id).trim();
+    const list = this.getDeletedGalleryIds();
+    if (!list.includes(targetId)) {
+      list.push(targetId);
+      localStorage.setItem("zada_deleted_gallery_ids", JSON.stringify(list));
+    }
+  },
+
+  async getAllGalleryPhotos() {
+    const deletedIds = this.getDeletedGalleryIds();
+    const isDeleted = (photoId) => deletedIds.includes(String(photoId).trim());
+
+    let photos = [];
+
+    // 1. Try fetching from Firestore first
+    try {
+      if (typeof db !== "undefined" && db) {
+        const snap = await db.collection("gallery").get();
+        if (!snap.empty) {
+          const fsList = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+          photos = fsList.filter((p) => p && p.id && !isDeleted(p.id));
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore gallery fetch error, fallback to local", e);
+    }
+
+    // 2. Fallback to LocalStorage if Firestore is empty or unavailable
+    if (!photos.length) {
+      const local = localStorage.getItem("zada_studio_gallery");
+      if (local !== null) {
+        try {
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed)) {
+            photos = parsed.filter((p) => p && p.id && !isDeleted(p.id));
+          }
+        } catch (err) {}
+      }
+    }
+
+    // 3. Fallback to default photos if still empty
+    if (!photos.length) {
+      photos = DEFAULT_GALLERY_PHOTOS.filter((p) => p && p.id && !isDeleted(p.id));
+    }
+
+    photos.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    localStorage.setItem("zada_studio_gallery", JSON.stringify(photos));
+    return photos;
+  },
+
+  async addGalleryPhoto(photo) {
+    const newPhoto = {
+      ...photo,
+      createdAt: photo.createdAt || new Date().toISOString()
+    };
+    try {
+      if (typeof db !== "undefined" && db) {
+        const ref = db.collection("gallery").doc();
+        newPhoto.id = ref.id;
+        await ref.set(newPhoto);
+      } else {
+        newPhoto.id = "gal-" + Date.now();
+      }
+    } catch (e) {
+      console.warn("Firestore save gallery failed, using local", e);
+      if (!newPhoto.id) newPhoto.id = "gal-" + Date.now();
+    }
+    const current = await this.getAllGalleryPhotos();
+    const updated = [newPhoto, ...current.filter((p) => String(p.id) !== String(newPhoto.id))];
+    localStorage.setItem("zada_studio_gallery", JSON.stringify(updated));
+    return newPhoto;
+  },
+
+  async addGalleryPhotosBatch(photosList) {
+    if (!Array.isArray(photosList) || !photosList.length) return [];
+    const addedPhotos = [];
+    const current = await this.getAllGalleryPhotos();
+    let updated = [...current];
+
+    for (let i = 0; i < photosList.length; i++) {
+      const item = photosList[i];
+      const newPhoto = {
+        ...item,
+        createdAt: item.createdAt || new Date().toISOString()
+      };
+      try {
+        if (typeof db !== "undefined" && db) {
+          const ref = db.collection("gallery").doc();
+          newPhoto.id = ref.id;
+          await ref.set(newPhoto);
+        } else {
+          newPhoto.id = "gal-" + Date.now() + "-" + i + "-" + Math.random().toString(36).substring(2, 6);
+        }
+      } catch (e) {
+        console.warn("Firestore batch save gallery item failed", e);
+        if (!newPhoto.id) newPhoto.id = "gal-" + Date.now() + "-" + i;
+      }
+      addedPhotos.push(newPhoto);
+      updated = [newPhoto, ...updated.filter((p) => String(p.id) !== String(newPhoto.id))];
+    }
+
+    localStorage.setItem("zada_studio_gallery", JSON.stringify(updated));
+    return addedPhotos;
+  },
+
+  async updateGalleryPhoto(id, patch) {
+    const targetId = String(id).trim();
+    try {
+      if (typeof db !== "undefined" && db) {
+        await db.collection("gallery").doc(targetId).update(patch);
+      }
+    } catch (e) {
+      console.warn("Firestore update gallery failed", e);
+    }
+    const current = await this.getAllGalleryPhotos();
+    const idx = current.findIndex((p) => String(p.id).trim() === targetId);
+    if (idx !== -1) {
+      current[idx] = { ...current[idx], ...patch };
+      localStorage.setItem("zada_studio_gallery", JSON.stringify(current));
+    }
+    return true;
+  },
+
+  async deleteGalleryPhoto(id) {
+    if (!id) return false;
+    const targetId = String(id).trim();
+
+    // Blacklist the ID so it never resurfaces in this session or future reloads
+    this.addDeletedGalleryId(targetId);
+
+    // Delete from Firestore if available
+    try {
+      if (typeof db !== "undefined" && db) {
+        await db.collection("gallery").doc(targetId).delete();
+      }
+    } catch (e) {
+      console.warn("Firestore delete gallery failed", e);
+    }
+
+    // Always clean up local storage
+    const local = localStorage.getItem("zada_studio_gallery");
+    let current = [];
+    if (local !== null) {
+      try {
+        current = JSON.parse(local);
+      } catch (err) {
+        current = [...DEFAULT_GALLERY_PHOTOS];
+      }
+    } else {
+      current = [...DEFAULT_GALLERY_PHOTOS];
+    }
+
+    const updated = current.filter((p) => p && String(p.id).trim() !== targetId);
+    localStorage.setItem("zada_studio_gallery", JSON.stringify(updated));
+    return true;
+  },
+
+  /* ------------------------------------------------------------------ */
+  /* Invoices & Receipts Management                                     */
+  /* ------------------------------------------------------------------ */
+  async getAllInvoices() {
+    let invoices = [];
+    try {
+      if (typeof db !== "undefined" && db) {
+        const snap = await db.collection("invoices").get();
+        if (!snap.empty) {
+          snap.forEach((doc) => invoices.push({ id: doc.id, ...doc.data() }));
+        }
+      }
+    } catch (e) {
+      console.warn("Firestore invoices fetch fallback to local cache:", e);
+    }
+
+    if (!invoices.length) {
+      try {
+        const cached = localStorage.getItem("zada_invoices");
+        invoices = cached ? JSON.parse(cached) : [...DEFAULT_INVOICES];
+      } catch (e) {
+        invoices = [...DEFAULT_INVOICES];
+      }
+    }
+
+    // Sort newest first
+    invoices.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+    return invoices;
+  },
+
+  async getInvoiceById(id) {
+    if (!id) return null;
+    const targetId = String(id).trim();
+    try {
+      if (typeof db !== "undefined" && db) {
+        const doc = await db.collection("invoices").doc(targetId).get();
+        if (doc.exists) {
+          return { id: doc.id, ...doc.data() };
+        }
+      }
+    } catch (e) {}
+
+    const all = await this.getAllInvoices();
+    return all.find((inv) => String(inv.id).trim() === targetId || String(inv.invoiceNumber).trim() === targetId) || null;
+  },
+
+  async saveInvoice(invoiceData) {
+    const id = invoiceData.id || `INV-${Date.now().toString(36).toUpperCase()}`;
+    const payload = {
+      ...invoiceData,
+      id,
+      updatedAt: new Date().toISOString()
+    };
+    if (!payload.createdAt) {
+      payload.createdAt = new Date().toISOString();
+    }
+
+    try {
+      if (typeof db !== "undefined" && db) {
+        await db.collection("invoices").doc(id).set(payload, { merge: true });
+      }
+    } catch (e) {
+      console.warn("Firestore save invoice error, saving locally:", e);
+    }
+
+    // Save to localStorage
+    try {
+      const current = await this.getAllInvoices();
+      const idx = current.findIndex((inv) => String(inv.id).trim() === String(id).trim());
+      let updated;
+      if (idx >= 0) {
+        current[idx] = payload;
+        updated = current;
+      } else {
+        updated = [payload, ...current];
+      }
+      localStorage.setItem("zada_invoices", JSON.stringify(updated));
+    } catch (e) {}
+
+    return payload;
+  },
+
+  async deleteInvoice(id) {
+    if (!id) return false;
+    const targetId = String(id).trim();
+    try {
+      if (typeof db !== "undefined" && db) {
+        await db.collection("invoices").doc(targetId).delete();
+      }
+    } catch (e) {
+      console.warn("Firestore delete invoice error:", e);
+    }
+
+    try {
+      const current = await this.getAllInvoices();
+      const updated = current.filter((inv) => String(inv.id).trim() !== targetId);
+      localStorage.setItem("zada_invoices", JSON.stringify(updated));
+    } catch (e) {}
+
+    return true;
+  }
+};
+
+const DEFAULT_INVOICES = [
+  {
+    id: "INV-20260819-001",
+    invoiceNumber: "INV/ZD/2026/08/001",
+    date: "2026-08-19",
+    createdAt: "2026-08-19T08:30:00Z",
+    clientName: "Naufal Hadi & Keluarga",
+    clientPhone: "081298765432",
+    clientEmail: "naufal.hadi@gmail.com",
+    clientAddress: "Bintaro Jaya Sektor 9, Tangerang Selatan",
+    serviceType: "studio",
+    serviceTitle: "Paket Wisuda & Keluarga Exclusive",
+    items: [
+      { description: "Paket Wisuda Platinum (120 Menit Studio + 10 Edited Photos + 1 Cetak Frame 16RS)", qty: 1, price: 750000, total: 750000 },
+      { description: "Extra Cetak Frame Minimalist 12R + Cetak High-Res", qty: 2, price: 125000, total: 250000 },
+      { description: "All Softcopy File Google Drive High Resolution", qty: 1, price: 100000, total: 100000 }
+    ],
+    subtotal: 1100000,
+    discount: 100000,
+    totalAmount: 1000000,
+    downPayment: 1000000,
+    remainingBalance: 0,
+    paymentMethod: "TRANSFER BCA",
+    paymentStatus: "lunas",
+    notes: "Jadwal sesi foto: Sabtu, 22 Agustus 2026, Pukul 13:30 - 15:30 WIB di Studio A ZADA. Harap hadir 15 menit sebelum sesi.",
+    adminName: "Admin ZADA Studio"
+  },
+  {
+    id: "INV-20260818-002",
+    invoiceNumber: "INV/ZD/2026/08/002",
+    date: "2026-08-18",
+    createdAt: "2026-08-18T14:15:00Z",
+    clientName: "PT Sinergi Media Kreasi (Wedding Event)",
+    clientPhone: "085711223344",
+    clientEmail: "event@sinergimedia.co.id",
+    clientAddress: "Grand Ballroom Hotel Mulia Senayan, Jakarta",
+    serviceType: "photobooth",
+    serviceTitle: "Layanan Unlimited Photobooth 3 Jam",
+    items: [
+      { description: "Paket Photo Booth Unlimited Cetak 3 Jam (Custom Frame, Lighting Pro & Instant Print 4R)", qty: 1, price: 3200000, total: 3200000 },
+      { description: "Custom Backdrop 3x2.5m + Fun Party Props", qty: 1, price: 500000, total: 500000 }
+    ],
+    subtotal: 3700000,
+    discount: 200000,
+    totalAmount: 3500000,
+    downPayment: 1500000,
+    remainingBalance: 2000000,
+    paymentMethod: "QRIS EDC MANDIRI",
+    paymentStatus: "dp",
+    notes: "DP 1.500.000 telah diterima. Pelunasan sisa 2.000.000 dibayarkan H-1 acara tanggal 24 Agustus 2026.",
+    adminName: "Admin ZADA Studio"
+  }
+];
+
+const DEFAULT_GALLERY_PHOTOS = [
+  /* 🎓 WISUDA */
+  {
+    id: "gal-1",
+    title: "Wisuda Sarjana & Magister Premium",
+    category: "wisuda",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 520,
+    tags: "Wisuda, Toga, Individual, Studio A",
+    createdAt: "2026-07-28T10:00:00Z"
+  },
+  {
+    id: "gal-8",
+    title: "Selebrasi Angkatan & Momen Kelulusan",
+    category: "wisuda",
+    orientation: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1627556592933-ffe99c1cd9eb?q=80&w=1920&auto=format&fit=crop",
+    dimensions: "1920 x 1280 px",
+    fileSizeKB: 830,
+    tags: "Wisuda, Group, Kebaya & Toga",
+    createdAt: "2026-07-21T08:30:00Z"
+  },
+  {
+    id: "gal-101",
+    title: "Potret Solo Kebaya Graduation Look",
+    category: "wisuda",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 480,
+    tags: "Wisuda, Kebaya Modern, Warm Soft",
+    createdAt: "2026-07-20T11:00:00Z"
+  },
+  {
+    id: "gal-102",
+    title: "Momen Bahagia Wisuda Bersama Orang Tua",
+    category: "wisuda",
+    orientation: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?q=80&w=1920&auto=format&fit=crop",
+    dimensions: "1920 x 1280 px",
+    fileSizeKB: 740,
+    tags: "Wisuda, Family Graduation, Classic",
+    createdAt: "2026-07-19T14:20:00Z"
+  },
+
+  /* 👨‍👩‍👧‍👦 KELUARGA */
+  {
+    id: "gal-2",
+    title: "Foto Keluarga Besar Warm Tone",
+    category: "keluarga",
+    orientation: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=1920&auto=format&fit=crop",
+    dimensions: "1920 x 1280 px",
+    fileSizeKB: 780,
+    tags: "Keluarga, Group, Classic Background",
+    createdAt: "2026-07-27T14:30:00Z"
+  },
+  {
+    id: "gal-201",
+    title: "Potret Keluarga Minimalist Modern",
+    category: "keluarga",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 590,
+    tags: "Keluarga, Minimalist, White Backdrop",
+    createdAt: "2026-07-18T10:15:00Z"
+  },
+  {
+    id: "gal-202",
+    title: "Foto Sesi Kasual & Ceria Tiga Generasi",
+    category: "keluarga",
+    orientation: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1609234656388-0ff363383899?q=80&w=1920&auto=format&fit=crop",
+    dimensions: "1920 x 1280 px",
+    fileSizeKB: 810,
+    tags: "Keluarga, Casual, Multi-Gen",
+    createdAt: "2026-07-17T16:40:00Z"
+  },
+
+  /* 💍 PREWEDDING */
+  {
+    id: "gal-3",
+    title: "Prewedding Modern Minimalist Studio",
+    category: "prewedding",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 610,
+    tags: "Prewedding, Couple, Soft Lighting",
+    createdAt: "2026-07-26T09:15:00Z"
+  },
+  {
+    id: "gal-301",
+    title: "Elegant Indoor Black Tie Couple Look",
+    category: "prewedding",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 660,
+    tags: "Prewedding, Formal Tuxedo, Dark Mood",
+    createdAt: "2026-07-16T13:00:00Z"
+  },
+  {
+    id: "gal-302",
+    title: "Outdoor Sunset Aesthetic Prewedding",
+    category: "prewedding",
+    orientation: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1920&auto=format&fit=crop",
+    dimensions: "1920 x 1280 px",
+    fileSizeKB: 880,
+    tags: "Prewedding, Outdoor, Warm Sunset",
+    createdAt: "2026-07-15T15:30:00Z"
+  },
+
+  /* 👤 PORTRAIT */
+  {
+    id: "gal-4",
+    title: "Personal Branding & Corporate Profile",
+    category: "portrait",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 440,
+    tags: "Portrait, Profile Look, Studio B",
+    createdAt: "2026-07-25T11:20:00Z"
+  },
+  {
+    id: "gal-401",
+    title: "Creative Dramatic Lighting Portrait",
+    category: "portrait",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 510,
+    tags: "Portrait, Editorial, Studio Shadow",
+    createdAt: "2026-07-14T09:00:00Z"
+  },
+
+  /* 💼 PAS FOTO */
+  {
+    id: "gal-5",
+    title: "Pas Foto Resmi & Kebutuhan Dokumen",
+    category: "pasfoto",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 320,
+    tags: "Pas Foto, Red/Blue Backdrop, Formal",
+    createdAt: "2026-07-24T16:00:00Z"
+  },
+  {
+    id: "gal-501",
+    title: "Pas Foto Visa & Schengen Standards",
+    category: "pasfoto",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 360,
+    tags: "Pas Foto, White Backdrop, Professional",
+    createdAt: "2026-07-13T10:45:00Z"
+  },
+
+  /* 📦 PRODUK */
+  {
+    id: "gal-6",
+    title: "Katalog Produk Skincare & Beauty",
+    category: "produk",
+    orientation: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1920&auto=format&fit=crop",
+    dimensions: "1920 x 1280 px",
+    fileSizeKB: 890,
+    tags: "Produk, Commercial, Macro Studio",
+    createdAt: "2026-07-23T13:10:00Z"
+  },
+  {
+    id: "gal-601",
+    title: "Commercial Fashion & Outfit Catalog",
+    category: "produk",
+    orientation: "portrait",
+    imageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1200&auto=format&fit=crop",
+    dimensions: "1200 x 1800 px",
+    fileSizeKB: 680,
+    tags: "Produk, Fashion, Lookbook Studio",
+    createdAt: "2026-07-12T14:15:00Z"
+  }
+];
