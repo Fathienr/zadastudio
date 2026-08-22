@@ -1,4 +1,16 @@
 {
-  "outputDirectory": ".",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/yearbook", "destination": "/yearbook.html" },
+    { "source": "/school", "destination": "/school.html" },
+    { "source": "/progress", "destination": "/progress.html" },
+    { "source": "/studio", "destination": "/studio.html" },
+    { "source": "/photobooth", "destination": "/photobooth.html" },
+    { "source": "/admin-dashboard", "destination": "/admin-dashboard.html" },
+    { "source": "/admin-login", "destination": "/admin-login.html" },
+    { "source": "/admin-invoice", "destination": "/admin-invoice.html" }
+  ]
 }
+
