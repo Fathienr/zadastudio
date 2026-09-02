@@ -164,23 +164,30 @@ function defaultProgress() {
 const ZadaData = {
   async getAllSchools() {
     let schools = [];
-    try {
-      if (typeof db !== "undefined" && db) {
-        const fetchPromise = db.collection("schools").get();
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Firestore schools timeout")), 8000)
-        );
-        const snap = await Promise.race([fetchPromise, timeoutPromise]);
-        if (!snap.empty) {
-          schools = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-          try {
-            localStorage.setItem("zada_schools_cache", JSON.stringify(schools));
-          } catch (e) {}
-          return schools;
+
+    // Try the real fetch up to 2 times before giving up — Safari in
+    // particular can flake on the very first connection attempt.
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        if (typeof db !== "undefined" && db) {
+          const fetchPromise = db.collection("schools").get();
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Firestore schools timeout")), 8000)
+          );
+          const snap = await Promise.race([fetchPromise, timeoutPromise]);
+          if (!snap.empty) {
+            schools = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+            try {
+              localStorage.setItem("zada_schools_cache", JSON.stringify(schools));
+            } catch (e) {}
+            return schools;
+          }
+          break; // snapshot came back but genuinely empty — don't retry
         }
+      } catch (e) {
+        console.warn(`Firestore schools fetch attempt ${attempt} failed:`, e);
+        if (attempt === 2) console.warn("Giving up after 2 attempts, falling back to cache.");
       }
-    } catch (e) {
-      console.warn("Firestore schools fetch fallback to cache:", e);
     }
 
     try {

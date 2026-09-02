@@ -18,6 +18,16 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Safari (desktop & iOS) frequently kills/interferes with Firestore's
+// default WebChannel/streaming connection — requests can hang or silently
+// fail with no error, which looks like "the site is empty" to visitors.
+// Forcing long-polling avoids that transport entirely and is the
+// officially recommended workaround for Safari/WebKit connectivity issues.
+db.settings({
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
+
 // Cache data locally so repeat visits/reloads feel instant instead of
 // re-fetching everything from the server every time.
 db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
