@@ -168,7 +168,7 @@ const ZadaData = {
       if (typeof db !== "undefined" && db) {
         const fetchPromise = db.collection("schools").get();
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Firestore schools timeout")), 3500)
+          setTimeout(() => reject(new Error("Firestore schools timeout")), 8000)
         );
         const snap = await Promise.race([fetchPromise, timeoutPromise]);
         if (!snap.empty) {
@@ -201,7 +201,7 @@ const ZadaData = {
       if (typeof db !== "undefined" && db) {
         const fetchPromise = db.collection("schools").doc(targetId).get();
         const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Firestore school timeout")), 3500)
+          setTimeout(() => reject(new Error("Firestore school timeout")), 8000)
         );
         const doc = await Promise.race([fetchPromise, timeoutPromise]);
         if (doc.exists) {
