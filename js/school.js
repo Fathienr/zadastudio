@@ -168,8 +168,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="container">
         <a href="yearbook.html#katalog" class="back-link">&larr; Kembali ke Portofolio Yearbook</a>
         <div class="detail-grid">
-          <div class="detail-cover" style="background:${pal.base}">
-            ${school.cover ? `<img class="detail-cover-img" src="${school.cover}" alt="Sampul ${school.school}" />` : `<span class="card-initial">${initial}</span>`}
+           <div class="detail-cover" style="background:${pal.base}">
+            ${school.cover ? `<div class="card-cover-shimmer"></div><img class="detail-cover-img" src="${school.cover}" alt="Sampul ${school.school}" onload="this.previousElementSibling && this.previousElementSibling.remove(); this.classList.add('is-loaded')" onerror="this.remove()" />` : ""}
+            <span class="card-initial">${initial}</span>
           </div>
           <div class="detail-title">
             <span class="eyebrow">${school.level} &middot; ${editions.length} Edisi Tersedia${school.hasPassword ? " &middot; &#128274; Privat" : ""}</span>

@@ -15,8 +15,8 @@ function schoolCardHTML(school) {
   const editionWord = school.editions.length > 1 ? "Edisi" : "Edisi";
   const latest = school.editions.slice().sort((a, b) => b.year - a.year)[0];
 
-  const coverImg = school.cover
-    ? `<img class="card-cover-img" src="${school.cover}" alt="Sampul ${school.school}" loading="lazy" />`
+    const coverImg = school.cover
+    ? `<div class="card-cover-shimmer"></div><img class="card-cover-img" src="${school.cover}" alt="Sampul ${school.school}" loading="lazy" onload="this.previousElementSibling && this.previousElementSibling.remove(); this.classList.add('is-loaded')" onerror="this.remove()" />`
     : "";
 
   const schoolThemes = typeof ZadaData.getSchoolThemes === "function"
@@ -39,7 +39,7 @@ function schoolCardHTML(school) {
         <span class="card-pop-badge">🔍 Sampul Utuh</span>
         ${coverImg}
         <span class="card-tag">${school.level}${school.hasPassword ? " &middot; &#128274; Privat" : ` &middot; ${school.editions.length} ${editionWord}`}</span>
-        ${school.cover ? "" : `<span class="card-initial">${initial}</span>`}
+        <span class="card-initial">${initial}</span>
         <div class="card-cover-foot">
           <div class="school">${school.school}</div>
           <div class="meta">${school.hasPassword ? "PRIVAT" : `EDISI ${yearLabel}`}</div>
