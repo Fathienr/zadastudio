@@ -102,20 +102,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       await auth.signInWithEmailAndPassword(email, password);
       window.location.href = "admin-dashboard.html";
-    } catch (err) {
+        } catch (err) {
       console.error("Firebase Login Error:", err);
-      let msg = "Email atau kata sandi tidak sesuai.";
-      if (err.code === "auth/user-not-found") {
-        msg = "Email belum terdaftar di Firebase Authentication.";
-      } else if (err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
-        msg = "Kata sandi salah. Masukkan password yang dibuat saat mendaftarkan akun di Firebase Console.";
-      } else if (err.code === "auth/invalid-email") {
-        msg = "Format email tidak valid. Pastikan penulisan email sudah benar.";
+      // Deliberately generic for user-not-found / wrong-password /
+      // invalid-credential: telling visitors *which* field is wrong lets
+      // an attacker enumerate valid admin emails one by one. Only the
+      // truly non-sensitive cases (formatting, rate limit, network) get
+      // a specific message.
+      let msg = "Email atau kata sandi tidak sesuai. Periksa kembali kredensial Anda.";
+      if (err.code === "auth/invalid-email") {
+        msg = "Format email tidak valid. Periksa kembali penulisan alamat email Anda.";
       } else if (err.code === "auth/too-many-requests") {
-        msg = "Terlalu banyak percobaan gagal. Silakan tunggu beberapa saat atau reset password.";
+        msg = "Terlalu banyak percobaan masuk yang gagal. Silakan tunggu beberapa saat sebelum mencoba lagi.";
       } else if (err.code === "auth/network-request-failed") {
-        msg = "Gagal terhubung ke server. Periksa koneksi internet Anda.";
-      } else if (err.message) {
+        msg = "Tidak dapat terhubung ke server. Periksa koneksi internet Anda dan coba lagi.";
+      } else if (
+        err.code !== "auth/user-not-found" &&
+        err.code !== "auth/wrong-password" &&
+        err.code !== "auth/invalid-credential" &&
+        err.message
+      ) {
         msg = err.message;
       }
       errorEl.textContent = msg;

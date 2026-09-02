@@ -2106,7 +2106,7 @@ select optgroup {
 .lock-gate h1 {
   font-size: var(--fs-h2);
   margin-block: 0.4rem 0.8rem;
-  color: #fff;
+  color: var(--color-text);
 }
 
 .lock-gate p {

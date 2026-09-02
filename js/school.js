@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                   </button>
                 </div>
               </div>
-              <p class="lock-error" id="lock-error">Kata sandi kurang tepat. Silakan periksa kembali atau hubungi tim ZADA.</p>
+              <p class="lock-error" id="lock-error">Kata sandi yang Anda masukkan tidak sesuai. Periksa kembali, atau hubungi tim ZADA untuk bantuan.</p>
               <button type="submit" class="btn btn-primary" id="lock-submit" style="width:100%; justify-content:center;">Buka Akses Portofolio &rarr;</button>
             </form>
 
