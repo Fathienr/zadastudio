@@ -2256,7 +2256,7 @@ select optgroup {
 .detail-meta div strong {
   display: block;
   font-size: 1.1rem;
-  color: #fff;
+  color: var(--color-text);
   margin-top: 0.2rem;
 }
 
