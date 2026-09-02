@@ -18,21 +18,12 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Safari (desktop & iOS) frequently kills/interferes with Firestore's
-// default WebChannel/streaming connection — requests can hang or silently
-// fail with no error, which looks like "the site is empty" to visitors.
-// Forcing long-polling avoids that transport entirely and is the
-// officially recommended workaround for Safari/WebKit connectivity issues.
-db.settings({
-  experimentalForceLongPolling: true,
-  useFetchStreams: false,
-});
-
-// Cache data locally so repeat visits/reloads feel instant instead of
-// re-fetching everything from the server every time.
-db.enablePersistence({ synchronizeTabs: true }).catch((err) => {
-  console.warn("Firestore offline cache tidak aktif:", err.code);
-});
+// NOTE: enablePersistence() dan experimentalForceLongPolling sengaja
+// TIDAK dipakai. enablePersistence() bikin query lain ikut nunggu setup
+// IndexedDB-nya kelar, dan di banyak device mobile itu bisa gantung
+// selamanya — itu penyebab semua device (selain Chrome desktop) selalu
+// nunjukin 0 sekolah. Kita udah punya cache manual (zada_schools_cache)
+// jadi nggak butuh fitur ini.
 
 /* Small helper: SHA-256 hash of a string, hex-encoded.
    Used to gate protected catalog content without ever storing or
