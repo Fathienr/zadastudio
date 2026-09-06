@@ -20,6 +20,7 @@
 
       /* ---- Typography color for Light Mode ---- */
       --color-text: #0f172a;
+      --color-text-toast: #fff;
       --color-text-dim: #334155;
       --color-muted: #64748b;
       --color-muted-2: #94a3b8;
@@ -2864,7 +2865,7 @@
       background: var(--color-primary);
       border: 1px solid var(--accent-400);
       border-radius: var(--radius-md);
-      color: #fff;
+      color: var(--color-text-toast);
       font-size: 0.9rem;
       box-shadow: var(--shadow-soft);
       opacity: 0;
