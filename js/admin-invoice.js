@@ -716,7 +716,7 @@ function calculateAndRenderPreview() {
   document.getElementById("calc-remaining").textContent = formatRupiah(remainingBalance);
 
   // Served by staff
-  const servedBy = (document.getElementById("inv-served-by")?.value || ).trim();
+  const servedBy = (document.getElementById("inv-served-by")?.value || "Fatih").trim();
   const prevServedBy = document.getElementById("prev-served-by");
   if (prevServedBy) prevServedBy.textContent = servedBy;
   const prevServedByMeta = document.getElementById("prev-served-by-meta");
