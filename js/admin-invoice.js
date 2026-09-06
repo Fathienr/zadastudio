@@ -197,6 +197,16 @@ const ALL_PRESETS = {
   },
 
   // FOTO KELUARGA
+   keluarga_bestvalue: {
+    serviceType: "studio",
+    serviceTitle: "Foto Keluarga Best Value",
+    items: [
+      { description: "Sesi Foto Keluarga s.d 15 Orang (45 Menit & 10 Retouch)", qty: 1, price: 399000, total: 399000 },
+      { description: "Cetak Foto Ukuran A4 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
+      { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
+    ],
+    notes: "Sesi foto keluarga s.d 15 orang. Termasuk cetak ukuran A4 dan bingkai. Bebas foto di berbagai background studio."
+  },
   keluarga_bestseller: {
     serviceType: "studio",
     serviceTitle: "Foto Keluarga Best Seller",
