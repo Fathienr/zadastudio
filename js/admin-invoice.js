@@ -173,7 +173,6 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto wisuda studio. Termasuk cetak ukuran A3 dan bingkai minimalis. Harap membawa toga lengkap dan hadir 15 menit sebelum jadwal."
   },
   wisuda_platinum: {
     serviceType: "studio",
@@ -183,7 +182,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Frame Ukuran 16RS", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto wisuda platinum eksklusif. Bebas foto di berbagai pilihan background studio."
+    
   },
   wisuda_standard: {
     serviceType: "studio",
@@ -193,7 +192,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran 12R + Bingkai", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto wisuda standar studio. Harap hadir tepat waktu sesuai slot reservasi."
+    
   },
 
   // FOTO KELUARGA
@@ -205,7 +204,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A4 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto keluarga s.d 15 orang. Termasuk cetak ukuran A4 dan bingkai. Bebas foto di berbagai background studio."
+    
   },
   keluarga_bestseller: {
     serviceType: "studio",
@@ -215,7 +214,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto keluarga s.d 15 orang. Termasuk cetak ukuran A3 dan bingkai. Bebas foto di berbagai background studio."
+    
   },
   keluarga_premium: {
     serviceType: "studio",
@@ -225,7 +224,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto keluarga besar s.d 30 orang durasi 60 menit. Termasuk cetak A3 dan bingkai minimalis."
+    
   },
 
   // PREWEDDING
@@ -237,7 +236,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sesi foto prewedding 60 menit. Bebas foto di berbagai pilihan background studio."
+    
   },
   prewed_premium: {
     serviceType: "studio",
@@ -248,7 +247,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Paket prewedding komplit termasuk MUA profesional dan kostum baju adat. Harap hadir 60 menit sebelum sesi foto untuk rias makeup."
+    
   },
 
   // PAS FOTO (PILIHAN UKURAN & LEMBAR CETAK)
@@ -259,7 +258,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Cetak 3x4 = 9 Lembar", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto ukuran 3x4 = 9 lembar. Pilihan background merah, biru, atau putih. Hasil cetak langsung jadi."
+    
   },
   pasfoto_4x6_4: {
     serviceType: "studio",
@@ -268,7 +267,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Cetak 4x6 = 4 Lembar", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto ukuran 4x6 = 4 lembar. Pilihan background merah, biru, atau putih. Hasil cetak langsung jadi."
+    
   },
   pasfoto_mix_34_46: {
     serviceType: "studio",
@@ -277,7 +276,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Cetak Mix: 3x4 = 4 Lembar, 4x6 = 2 Lembar", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto kombinasi cetak: 3x4 = 4 lembar dan 4x6 = 2 lembar. Background merah, biru, atau putih."
+    
   },
   pasfoto_mix_23_34_46: {
     serviceType: "studio",
@@ -286,7 +285,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Cetak Mix: 2x3 = 4 Lembar, 3x4 = 4 Lembar, 4x6 = 2 Lembar", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto kombinasi lengkap: 2x3 = 4 lembar, 3x4 = 4 lembar, 4x6 = 2 lembar. Background merah, biru, atau putih."
+    
   },
   pasfoto_mix_23_34: {
     serviceType: "studio",
@@ -295,7 +294,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Cetak Mix: 2x3 = 4 Lembar, 3x4 = 4 Lembar", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto kombinasi cetak: 2x3 = 4 lembar dan 3x4 = 4 lembar. Background merah, biru, atau putih."
+    
   },
   pasfoto_2x3_12: {
     serviceType: "studio",
@@ -304,7 +303,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Cetak 2x3 = 12 Lembar", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto ukuran 2x3 = 12 lembar. Pilihan background merah, biru, atau putih. Hasil cetak langsung jadi."
+    
   },
 
   // PAS FOTO VISA NEGARA
@@ -315,7 +314,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa Standar 3,5 x 4,5 cm (Cetak 4 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format Kedutaan & Imigrasi", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto visa internasional ukuran standar 3,5 x 4,5 cm background putih, telinga terlihat, tanpa kacamata."
+    
   },
   visa_jepang: {
     serviceType: "studio",
@@ -324,7 +323,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa Jepang 3,5 x 4,5 cm (Cetak 4 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format Kedutaan Jepang", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto visa Jepang ukuran 3,5 x 4,5 cm background putih polos, pencahayaan merata, tanpa kacamata."
+    
   },
   visa_amerika: {
     serviceType: "studio",
@@ -333,7 +332,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa Amerika US 5 x 5 cm (Cetak 2 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format DS-160 (600x600 px)", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto visa US Amerika ukuran 5 x 5 cm background putih tanpa kacamata siap upload DS-160."
+    
   },
   visa_china: {
     serviceType: "studio",
@@ -342,7 +341,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa China 3,3 x 4,8 cm (Cetak 4 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format Kedutaan China (354x472 px)", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto visa China ukuran 3,3 x 4,8 cm background putih, telinga dan dahi terlihat jelas."
+    
   },
   visa_eropa: {
     serviceType: "studio",
@@ -351,7 +350,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa Eropa Schengen 3,5 x 4,5 cm (Cetak 4 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format Kedutaan Schengen (VFS/TLS)", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto visa Schengen Eropa ukuran 3,5 x 4,5 cm proporsi wajah 70-80%, background putih atau abu-abu terang."
+    
   },
   visa_korea: {
     serviceType: "studio",
@@ -360,7 +359,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa Korea 3,5 x 4,5 cm (Cetak 4 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format KVAC Kedutaan Korea", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Pas foto visa Korea Selatan ukuran 3,5 x 4,5 cm background putih, telinga dan dahi terlihat jelas, siap registrasi KVAC."
+    
   },
 
   // FOTO PROFILE & COMBO
@@ -372,7 +371,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran 4R (1 Lembar)", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Foto profile personal branding, resume, LinkedIn, atau modeling."
+    
   },
   profile_combo: {
     serviceType: "studio",
@@ -382,7 +381,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran 4R (2 Lembar)", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Paket combo lengkap foto formal dokumen dan foto profile aesthetic profesional."
+    
   },
 
   // FOTO PRODUK & PROFESI ANAK
@@ -393,7 +392,7 @@ const ALL_PRESETS = {
       { description: "Foto Produk Commercial Studio (5 Retouch per Produk)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Foto produk komersial katalog dan e-commerce. Harga per produk."
+    
   },
   profesi_anak: {
     serviceType: "studio",
@@ -403,7 +402,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Foto profesi anak TK, PAUD, SD sudah termasuk kostum lengkap dan cetak bingkai A3."
+    
   },
 
   // SEWA STUDIO SPACE (TANPA FOTOGRAFER)
@@ -414,7 +413,7 @@ const ALL_PRESETS = {
       { description: "Sewa Studio Space 2 Spot (Durasi 60 Menit)", qty: 1, price: 250000, total: 250000 },
       { description: "Lighting Godox + Softbox & Reflector", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sewa studio mandiri tanpa fotografer. Peralatan lighting standar sudah disediakan."
+    
   },
   sewa_2spot_3h: {
     serviceType: "studio",
@@ -423,7 +422,7 @@ const ALL_PRESETS = {
       { description: "Sewa Studio Space 2 Spot (Durasi 3 Jam)", qty: 1, price: 500000, total: 500000 },
       { description: "Lighting Godox + Aksesoris Studio", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sewa ruang studio 3 jam untuk photoshoot atau videography mandiri."
+    
   },
   sewa_all_3h: {
     serviceType: "studio",
@@ -432,7 +431,7 @@ const ALL_PRESETS = {
       { description: "Sewa All Access Seluruh Area Studio (Durasi 3 Jam)", qty: 1, price: 600000, total: 600000 },
       { description: "Full Lighting Godox + Seluruh Spot Background", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sewa all access seluruh area studio dan lighting selama 3 jam."
+    
   },
   sewa_all_fullday: {
     serviceType: "studio",
@@ -441,7 +440,7 @@ const ALL_PRESETS = {
       { description: "Sewa All Access Full Day (Durasi 8 Jam)", qty: 1, price: 1300000, total: 1300000 },
       { description: "Full Akses Seluruh Fasilitas & Lighting Pro", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Sewa studio full day 8 jam untuk produksi konten besar, iklan, atau syuting."
+    
   },
 
   // PHOTO BOOTH UNLIMITED
@@ -453,7 +452,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame Eksklusif & Custom Template", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Animasi & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Layanan photobooth 2 jam unlimited cetak. DP 50% untuk reservasi tanggal acara."
+    
   },
   pb_classic_3h: {
     serviceType: "photobooth",
@@ -463,7 +462,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame Eksklusif & Custom Template", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Animasi & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Layanan photobooth 3 jam unlimited cetak untuk resepsi pernikahan atau gathering."
+    
   },
   pb_highangle_2h: {
     serviceType: "photobooth",
@@ -473,7 +472,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Frame Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Boomerang & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Photobooth sudut pandang atas kekinian dan estetik."
+    
   },
   pb_highangle_3h: {
     serviceType: "photobooth",
@@ -483,7 +482,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Frame Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Boomerang & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Photobooth high angle durasi 3 jam unlimited cetak."
+    
   },
   pb_premium_2h: {
     serviceType: "photobooth",
@@ -493,7 +492,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Template Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File High Resolution & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Photobooth premium dengan pencahayaan studio terbaik dan warna kulit halus cerah."
+    
   },
   pb_premium_3h: {
     serviceType: "photobooth",
@@ -503,7 +502,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Template Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File High Resolution & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Photobooth premium durasi 3 jam unlimited cetak untuk acara formal dan resepsi."
+    
   },
   pb_mingle_2h: {
     serviceType: "photobooth",
@@ -513,7 +512,7 @@ const ALL_PRESETS = {
       { description: "Unlimited Cetak Instan + Paper Frame", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Photobooth interaktif tanpa antrean, fotografer berkeliling mengabadikan momen tamu."
+    
   },
   pb_mingle_3h: {
     serviceType: "photobooth",
@@ -523,7 +522,7 @@ const ALL_PRESETS = {
       { description: "Unlimited Cetak Instan + Paper Frame", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Mingle photobooth durasi 3 jam keliling meja tamu."
+    
   },
 
   // YEARBOOK & BUKU TAHUNAN
@@ -534,7 +533,7 @@ const ALL_PRESETS = {
       { description: "Produksi Buku Tahunan Hardcover Premium (150 Eks @ Rp 175.000)", qty: 150, price: 175000, total: 26250000 },
       { description: "E-Book Flipbook Digital Interaktif", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Produksi buku tahunan sekolah hardcover premium. Pembayaran bertahap: DP 30%, Termin 2 setelah sesi foto 40%, Pelunasan 30% saat serah terima buku."
+    
   },
   yearbook_softcover: {
     serviceType: "yearbook",
@@ -543,7 +542,7 @@ const ALL_PRESETS = {
       { description: "Produksi Buku Tahunan Softcover Standard (150 Eks @ Rp 135.000)", qty: 150, price: 135000, total: 20250000 },
       { description: "E-Book Flipbook Digital Interaktif", qty: 1, price: 0, total: 0 }
     ],
-    notes: "Produksi buku tahunan sekolah softcover. Pembayaran bertahap: DP 30%, Termin 2 40%, Pelunasan 30%."
+    
   },
   yearbook_digital: {
     serviceType: "yearbook",
@@ -551,7 +550,7 @@ const ALL_PRESETS = {
     items: [
       { description: "Paket Flipbook Digital & Sesi Foto (100 Siswa @ Rp 75.000)", qty: 100, price: 75000, total: 7500000 }
     ],
-    notes: "Paket dokumentasi foto dan flipbook digital interaktif tanpa cetak fisik."
+    
   }
 };
 
