@@ -795,7 +795,7 @@ async function saveCurrentInvoice() {
   const servedBy = (document.getElementById("inv-served-by")?.value || "Fatih").trim();
 
   const invoiceData = {
-    id: document.getElementById("inv-id").value || undefined,
+    id: document.getElementById("inv-id").value || ,
     invoiceNumber: document.getElementById("inv-number").value.trim() || generateInvoiceNumber(),
     date: document.getElementById("inv-date").value,
     servedBy: servedBy,
