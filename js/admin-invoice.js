@@ -137,7 +137,7 @@ async function resetInvoiceForm() {
   document.getElementById("inv-client-name").value = "";
   document.getElementById("inv-client-phone").value = "";
   document.getElementById("inv-client-email").value = "";
-  document.getElementById("inv-client-address").value = "";
+  document.getElementById("inv-client-address").value = "Pondok Aren Tangerang Selatan";
   document.getElementById("inv-service-type").value = "studio";
   document.getElementById("inv-service-title").value = "Paket Foto Studio";
   document.getElementById("inv-discount").value = "0";
