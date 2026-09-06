@@ -40,6 +40,18 @@ function toCapitalWords(str) {
     .join(" ");
 }
 
+// Guards against real undefined/null AND the literal text "undefined"/"null"
+// that can end up stored in a field (e.g. a preset with no notes property,
+// or old/corrupt saved data). Always returns a safe, clean string.
+function cleanNotes(value) {
+  if (value === undefined || value === null) return "";
+  const str = String(value).trim();
+  if (str === "" || str.toLowerCase() === "undefined" || str.toLowerCase() === "null") {
+    return "";
+  }
+  return str;
+}
+
 async function generateSequentialInvoiceNumber(dateString = null) {
   const targetDate = dateString || getTodayDateString();
   const d = new Date(targetDate);
@@ -561,7 +573,9 @@ function applyPreset(presetKey) {
 
   document.getElementById("inv-service-type").value = preset.serviceType;
   document.getElementById("inv-service-title").value = preset.serviceTitle;
-  document.getElementById("inv-notes").value = preset.notes;
+  // Some presets don't define a "notes" property — fall back to "" instead
+  // of letting undefined get coerced into the literal text "undefined".
+  document.getElementById("inv-notes").value = cleanNotes(preset.notes);
   invoiceItems = JSON.parse(JSON.stringify(preset.items));
 
   // Sync main preset select if option exists
@@ -671,7 +685,7 @@ function calculateAndRenderPreview() {
   const clientAddress = document.getElementById("inv-client-address").value || "";
   const serviceTitle = document.getElementById("inv-service-title").value || "Layanan ZADA Studio";
   const paymentMethod = document.getElementById("inv-payment-method").value || "Transfer Bank";
-  const notesVal = document.getElementById("inv-notes").value || "";
+  const notesVal = cleanNotes(document.getElementById("inv-notes").value);
 
   const discount = Math.max(0, parseInt(document.getElementById("inv-discount").value, 10) || 0);
   let downPayment = Math.max(0, parseInt(document.getElementById("inv-dp").value, 10) || 0);
@@ -729,7 +743,7 @@ function calculateAndRenderPreview() {
   document.getElementById("prev-client-address").textContent = clientAddress || "—";
   document.getElementById("prev-service-title").textContent = serviceTitle;
   document.getElementById("prev-payment-method").textContent = paymentMethod;
-  document.getElementById("prev-notes").textContent = notesVal || "Terima kasih atas kepercayaan Anda.";
+  document.getElementById("prev-notes").textContent = notesVal || "Terima Kasih atas Kepercayaan Anda.";
 
   // Status Stamp
   const stampEl = document.getElementById("prev-status-stamp");
@@ -814,7 +828,7 @@ async function saveCurrentInvoice() {
     remainingBalance: parseInt(document.getElementById("calc-remaining").textContent.replace(/[^0-9]/g, ""), 10) || 0,
     paymentMethod: document.getElementById("inv-payment-method").value,
     paymentStatus: document.getElementById("inv-status").value,
-    notes: document.getElementById("inv-notes").value.trim()
+    notes: cleanNotes(document.getElementById("inv-notes").value)
   };
 
   const btnSave = document.getElementById("btn-save-invoice");
@@ -930,7 +944,7 @@ async function sendWhatsAppInvoice() {
   const remaining = document.getElementById("calc-remaining").textContent;
   const status = document.getElementById("inv-status").value;
   const paymentMethod = document.getElementById("inv-payment-method").value;
-  const notes = document.getElementById("inv-notes").value.trim();
+  const notes = cleanNotes(document.getElementById("inv-notes").value);
 
   // Format clean phone number (replace leading 0 or +62 with 62)
   let cleanPhone = phone.replace(/[^0-9]/g, "");
@@ -981,7 +995,7 @@ Status: ${statusText}
 Metode Pembayaran: ${paymentMethod}
 
 Catatan dan Ketentuan:
-${notes || "Harap hadir 15 menit sebelum jadwal sesi foto."}
+${notes || "Terima Kasih atas Kepercayaan Anda."}
 
 Jika ada pertanyaan atau konfirmasi jadwal, silakan langsung membalas pesan ini.
 
@@ -1134,7 +1148,7 @@ function loadInvoiceIntoEditor(invoiceData) {
   document.getElementById("inv-dp").value = invoiceData.downPayment || 0;
   document.getElementById("inv-payment-method").value = invoiceData.paymentMethod || "QRIS EDC MANDIRI";
   document.getElementById("inv-status").value = invoiceData.paymentStatus || "lunas";
-  document.getElementById("inv-notes").value = invoiceData.notes || "";
+  document.getElementById("inv-notes").value = cleanNotes(invoiceData.notes);
 
   invoiceItems = Array.isArray(invoiceData.items) && invoiceData.items.length
     ? JSON.parse(JSON.stringify(invoiceData.items))
