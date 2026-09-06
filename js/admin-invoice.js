@@ -359,7 +359,7 @@ const ALL_PRESETS = {
       { description: "Pas Foto Visa Korea 3,5 x 4,5 cm (Cetak 4 Lembar)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Format KVAC Kedutaan Korea", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Pas foto visa Korea Selatan ukuran 3,5 x 4,5 cm background putih, telinga dan dahi terlihat jelas, siap registrasi KVAC."
   },
 
   // FOTO PROFILE & COMBO
@@ -371,7 +371,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran 4R (1 Lembar)", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Foto profile personal branding, resume, LinkedIn, atau modeling."
   },
   profile_combo: {
     serviceType: "studio",
@@ -381,7 +381,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran 4R (2 Lembar)", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Paket combo lengkap foto formal dokumen dan foto profile aesthetic profesional."
   },
 
   // FOTO PRODUK & PROFESI ANAK
@@ -392,7 +392,7 @@ const ALL_PRESETS = {
       { description: "Foto Produk Commercial Studio (5 Retouch per Produk)", qty: 1, price: 75000, total: 75000 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Foto produk komersial katalog dan e-commerce. Harga per produk."
   },
   profesi_anak: {
     serviceType: "studio",
@@ -402,7 +402,7 @@ const ALL_PRESETS = {
       { description: "Cetak Foto Ukuran A3 + Bingkai Minimalis", qty: 1, price: 0, total: 0 },
       { description: "Master Soft File Google Drive", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Foto profesi anak TK, PAUD, SD sudah termasuk kostum lengkap dan cetak bingkai A3."
   },
 
   // SEWA STUDIO SPACE (TANPA FOTOGRAFER)
@@ -413,7 +413,7 @@ const ALL_PRESETS = {
       { description: "Sewa Studio Space 2 Spot (Durasi 60 Menit)", qty: 1, price: 250000, total: 250000 },
       { description: "Lighting Godox + Softbox & Reflector", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Sewa studio mandiri tanpa fotografer. Peralatan lighting standar sudah disediakan."
   },
   sewa_2spot_3h: {
     serviceType: "studio",
@@ -422,7 +422,7 @@ const ALL_PRESETS = {
       { description: "Sewa Studio Space 2 Spot (Durasi 3 Jam)", qty: 1, price: 500000, total: 500000 },
       { description: "Lighting Godox + Aksesoris Studio", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Sewa ruang studio 3 jam untuk photoshoot atau videography mandiri."
   },
   sewa_all_3h: {
     serviceType: "studio",
@@ -431,7 +431,7 @@ const ALL_PRESETS = {
       { description: "Sewa All Access Seluruh Area Studio (Durasi 3 Jam)", qty: 1, price: 600000, total: 600000 },
       { description: "Full Lighting Godox + Seluruh Spot Background", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Sewa all access seluruh area studio dan lighting selama 3 jam."
   },
   sewa_all_fullday: {
     serviceType: "studio",
@@ -440,7 +440,7 @@ const ALL_PRESETS = {
       { description: "Sewa All Access Full Day (Durasi 8 Jam)", qty: 1, price: 1300000, total: 1300000 },
       { description: "Full Akses Seluruh Fasilitas & Lighting Pro", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Sewa studio full day 8 jam untuk produksi konten besar, iklan, atau syuting."
   },
 
   // PHOTO BOOTH UNLIMITED
@@ -452,7 +452,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame Eksklusif & Custom Template", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Animasi & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Layanan photobooth 2 jam unlimited cetak. DP 50% untuk reservasi tanggal acara."
   },
   pb_classic_3h: {
     serviceType: "photobooth",
@@ -462,7 +462,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame Eksklusif & Custom Template", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Animasi & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Layanan photobooth 3 jam unlimited cetak untuk resepsi pernikahan atau gathering."
   },
   pb_highangle_2h: {
     serviceType: "photobooth",
@@ -472,7 +472,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Frame Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Boomerang & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Photobooth sudut pandang atas kekinian dan estetik."
   },
   pb_highangle_3h: {
     serviceType: "photobooth",
@@ -482,7 +482,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Frame Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF Boomerang & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Photobooth high angle durasi 3 jam unlimited cetak."
   },
   pb_premium_2h: {
     serviceType: "photobooth",
@@ -492,7 +492,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Template Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File High Resolution & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Photobooth premium dengan pencahayaan studio terbaik dan warna kulit halus cerah."
   },
   pb_premium_3h: {
     serviceType: "photobooth",
@@ -502,7 +502,7 @@ const ALL_PRESETS = {
       { description: "Paper Frame & Custom Template Design", qty: 1, price: 0, total: 0 },
       { description: "Soft File High Resolution & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Photobooth premium durasi 3 jam unlimited cetak untuk acara formal dan resepsi."
   },
   pb_mingle_2h: {
     serviceType: "photobooth",
@@ -512,7 +512,7 @@ const ALL_PRESETS = {
       { description: "Unlimited Cetak Instan + Paper Frame", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Photobooth interaktif tanpa antrean, fotografer berkeliling mengabadikan momen tamu."
   },
   pb_mingle_3h: {
     serviceType: "photobooth",
@@ -522,7 +522,7 @@ const ALL_PRESETS = {
       { description: "Unlimited Cetak Instan + Paper Frame", qty: 1, price: 0, total: 0 },
       { description: "Soft File GIF & QR Code Download", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Mingle photobooth durasi 3 jam keliling meja tamu."
   },
 
   // YEARBOOK & BUKU TAHUNAN
@@ -533,7 +533,7 @@ const ALL_PRESETS = {
       { description: "Produksi Buku Tahunan Hardcover Premium (150 Eks @ Rp 175.000)", qty: 150, price: 175000, total: 26250000 },
       { description: "E-Book Flipbook Digital Interaktif", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Produksi buku tahunan sekolah hardcover premium. Pembayaran bertahap: DP 30%, Termin 2 setelah sesi foto 40%, Pelunasan 30% saat serah terima buku."
   },
   yearbook_softcover: {
     serviceType: "yearbook",
@@ -542,7 +542,7 @@ const ALL_PRESETS = {
       { description: "Produksi Buku Tahunan Softcover Standard (150 Eks @ Rp 135.000)", qty: 150, price: 135000, total: 20250000 },
       { description: "E-Book Flipbook Digital Interaktif", qty: 1, price: 0, total: 0 }
     ],
-    
+    notes: "Produksi buku tahunan sekolah softcover. Pembayaran bertahap: DP 30%, Termin 2 40%, Pelunasan 30%."
   },
   yearbook_digital: {
     serviceType: "yearbook",
@@ -550,7 +550,7 @@ const ALL_PRESETS = {
     items: [
       { description: "Paket Flipbook Digital & Sesi Foto (100 Siswa @ Rp 75.000)", qty: 100, price: 75000, total: 7500000 }
     ],
-    
+    notes: "Paket dokumentasi foto dan flipbook digital interaktif tanpa cetak fisik."
   }
 };
 
@@ -561,7 +561,7 @@ function applyPreset(presetKey) {
 
   document.getElementById("inv-service-type").value = preset.serviceType;
   document.getElementById("inv-service-title").value = preset.serviceTitle;
-  document.getElementById("inv-notes").value = "Terima kasih atas kepercayaan Anda. Paket ini sudah termasuk semua layanan yang tercantum di struk. Silakan hubungi kami jika ada pertanyaan lebih lanjut.";
+  document.getElementById("inv-notes").value = preset.notes;
   invoiceItems = JSON.parse(JSON.stringify(preset.items));
 
   // Sync main preset select if option exists
