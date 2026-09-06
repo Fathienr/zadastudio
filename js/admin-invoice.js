@@ -561,7 +561,7 @@ function applyPreset(presetKey) {
 
   document.getElementById("inv-service-type").value = preset.serviceType;
   document.getElementById("inv-service-title").value = preset.serviceTitle;
-  document.getElementById("inv-notes").value = preset.notes;
+  document.getElementById("inv-notes").value = "Terima kasih atas kepercayaan Anda. Paket ini sudah termasuk semua layanan yang tercantum di struk. Silakan hubungi kami jika ada pertanyaan lebih lanjut.";
   invoiceItems = JSON.parse(JSON.stringify(preset.items));
 
   // Sync main preset select if option exists
@@ -795,7 +795,7 @@ async function saveCurrentInvoice() {
   const servedBy = (document.getElementById("inv-served-by")?.value || "Fatih").trim();
 
   const invoiceData = {
-    id: document.getElementById("inv-id").value || ,
+    id: document.getElementById("inv-id").value || undefined,
     invoiceNumber: document.getElementById("inv-number").value.trim() || generateInvoiceNumber(),
     date: document.getElementById("inv-date").value,
     servedBy: servedBy,
