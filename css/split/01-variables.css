@@ -1,0 +1,135 @@
+    /* ==========================================================================
+      ZADA STUDIO — Yearbook Portfolio Design System
+      Company: ZADA STUDIO (Creative Visual Solution)
+      Division: ZADA Yearbook (yearbook.zada.id)
+      ========================================================================== */
+
+    :root {
+      /* ---- Default Theme: Light Mode (Tema Biasa) ---- */
+      --color-bg: #f8fafc;
+      --color-primary: #ffffff;
+      --color-secondary: #f1f5f9;
+      --color-surface: #ffffff;
+      --color-surface-2: #f8fafc;
+
+      /* ---- Glassmorphism for Light Mode ---- */
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-bg-strong: rgba(255, 255, 255, 0.95);
+      --glass-border: rgba(203, 213, 225, 0.75);
+      --glass-border-none: rgba(255, 255, 255, 0);
+      --glass-border-hover: rgba(37, 99, 235, 0.5);
+
+      /* ---- Typography color for Light Mode ---- */
+      --color-text: #0f172a;
+      --color-text-toast: #000000;
+      --color-text-dim: #334155;
+      --color-muted: #64748b;
+      --color-muted-2: #94a3b8;
+
+      /* ---- Nav & Overlays ---- */
+      --nav-scrolled-bg: rgba(255, 255, 255, 0.90);
+      --nav-mobile-bg: rgba(248, 250, 252, 0.98);
+      --footer-bg: linear-gradient(180deg, transparent, rgba(241, 245, 249, 0.95));
+      --hero-card-bg: rgba(255, 255, 255, 0.92);
+      --card-cover-overlay: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(241, 245, 249, 0.2) 50%, rgba(248, 250, 252, 0.92) 100%);
+      --table-header-bg: rgba(241, 245, 249, 0.95);
+
+      /* ---- Accent Blue Family ---- */
+      --accent-700: #1d4ed8;
+      --accent-500: #2563eb;
+      --accent-400: #3b82f6;
+      --accent-300: #2563eb;
+      --accent-glow: #3b82f6;
+
+      --gradient-brand: linear-gradient(135deg, #1d4ed8 0%, #2563eb 55%, #3b82f6 100%);
+      --gradient-brand-soft: linear-gradient(135deg, rgba(29,78,216,0.08) 0%, rgba(37,99,235,0.06) 55%, rgba(59,130,246,0.04) 100%);
+      --gradient-text: linear-gradient(100deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%);
+
+      /* ---- Typography ---- */
+      --font-display: 'Poppins', 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+
+      --fs-hero: clamp(2.4rem, 5vw, 4.4rem);
+      --fs-h1: clamp(2.0rem, 3.6vw, 3.2rem);
+      --fs-h2: clamp(1.5rem, 2.6vw, 2.2rem);
+      --fs-h3: clamp(1.15rem, 1.6vw, 1.45rem);
+      --fs-lead: clamp(1.0rem, 1.3vw, 1.2rem);
+      --fs-body: 1rem;
+      --fs-small: 0.875rem;
+      --fs-eyebrow: 0.8rem;
+
+      /* ---- Spacing ---- */
+      --space-3xs: 0.25rem;
+      --space-2xs: 0.5rem;
+      --space-xs: 0.75rem;
+      --space-sm: 1rem;
+      --space-md: 1.5rem;
+      --space-lg: 2.5rem;
+      --space-xl: 4rem;
+      --space-2xl: 6rem;
+
+      --container-w: 1280px;
+      --container-pad: clamp(1.25rem, 4vw, 2.5rem);
+
+      /* ---- Radii & Shadow ---- */
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+      --radius-pill: 999px;
+
+      --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-lift: 0 20px 40px rgba(15, 23, 42, 0.12);
+      --shadow-glow: 0 0 0 1px rgba(37, 99, 235, 0.18), 0 8px 30px rgba(37, 99, 235, 0.12);
+
+      --dur-fast: 0.25s;
+      --dur-med: 0.5s;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    [data-theme="dark"] {
+      /* ---- Base surfaces (Dark Mode) ---- */
+      color-scheme: dark;
+      --color-bg: #0a0e1a;
+      --color-primary: #0f172a;
+      --color-secondary: #111827;
+      --color-surface: #131b2e;
+      --color-surface-2: #0d1424;
+
+      /* ---- Glassmorphism ---- */
+      --glass-bg: rgba(255, 255, 255, 0.045);
+      --glass-bg-strong: rgba(255, 255, 255, 0.075);
+      --glass-border: rgba(255, 255, 255, 0.09);
+      --glass-border-hover: rgba(96, 165, 250, 0.45);
+
+      /* ---- Typography color ---- */
+      --color-text: #f4f6fb;
+      --color-text-dim: #c7cee0;
+      --color-muted: #8a93a8;
+      --color-muted-2: #5c6685;
+
+      /* ---- Nav & Overlays ---- */
+      --nav-scrolled-bg: rgba(10, 14, 26, 0.78);
+      --nav-mobile-bg: rgba(8, 11, 20, 0.96);
+      --footer-bg: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.8));
+      --hero-card-bg: rgba(15, 23, 42, 0.75);
+      --card-cover-overlay: linear-gradient(180deg, rgba(11, 15, 25, 0.1) 0%, rgba(11, 15, 25, 0.4) 50%, rgba(8, 11, 20, 0.95) 100%);
+      --table-header-bg: rgba(15, 23, 42, 0.8);
+
+      /* ---- Accent Blue Family ---- */
+      --accent-700: #1d4ed8;
+      --accent-500: #3b82f6;
+      --accent-400: #60a5fa;
+      --accent-300: #93c5fd;
+      --accent-glow: #2563eb;
+
+      --gradient-brand: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 55%, #60a5fa 100%);
+      --gradient-brand-soft: linear-gradient(135deg, rgba(29,78,216,0.18) 0%, rgba(59,130,246,0.14) 55%, rgba(96,165,250,0.10) 100%);
+      --gradient-text: linear-gradient(100deg, #dbeafe 0%, #93c5fd 45%, #3b82f6 100%);
+
+      /* ---- Shadows ---- */
+      --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.35);
+      --shadow-lift: 0 24px 60px rgba(2, 8, 23, 0.55);
+      --shadow-glow: 0 0 0 1px rgba(96,165,250,0.15), 0 0 40px rgba(37,99,235,0.25);
+    }
+

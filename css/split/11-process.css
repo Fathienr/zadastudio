@@ -1,0 +1,122 @@
+    /* ==========================================================================
+      Process & Workflows Section
+      ========================================================================== */
+
+    .band {
+      background: var(--color-surface);
+      border-block: 1px solid var(--glass-border);
+      padding-block: var(--space-2xl);
+    }
+
+    [data-theme="dark"] .band {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.6) 0%, rgba(10, 14, 26, 0.9) 100%);
+    }
+
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.25rem;
+      margin-top: var(--space-lg);
+    }
+
+    @media (max-width: 1024px) {
+      .workflow-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .workflow-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .workflow-card {
+      background: var(--color-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.25rem;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: transform var(--dur-fast) ease, border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .workflow-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--glass-border-hover);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .workflow-card__number {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent-500);
+      background: var(--gradient-brand-soft);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      border: 1px solid var(--glass-border);
+    }
+
+    .workflow-card h3 {
+      font-size: 1.1rem;
+      color: var(--color-text);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .workflow-card p {
+      font-size: 0.875rem;
+      color: var(--color-text-dim);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .process {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+
+    .process li {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      backdrop-filter: blur(12px);
+      transition: transform var(--dur-fast) ease, border-color var(--dur-fast) ease;
+    }
+
+    .process li:hover {
+      transform: translateY(-4px);
+      border-color: var(--glass-border-hover);
+    }
+
+    .process h3 {
+      font-size: 1.05rem;
+      color: var(--accent-300);
+      margin-bottom: 0.4rem;
+    }
+
+    .process p {
+      font-size: 0.88rem;
+    }
+
+    .process-footnote {
+      margin-top: var(--space-lg);
+      padding: var(--space-md);
+      background: var(--gradient-brand-soft);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      color: var(--color-text-dim);
+    }
+

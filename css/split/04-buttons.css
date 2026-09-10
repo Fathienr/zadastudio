@@ -1,0 +1,87 @@
+    /* ==========================================================================
+      Buttons & Controls
+      ========================================================================== */
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      padding: 0.8rem 1.6rem;
+      border-radius: var(--radius-pill);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.92rem;
+      border: 1px solid transparent;
+      transition: all var(--dur-fast) var(--ease-out);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .btn:active { transform: translateY(1px) scale(0.99); }
+
+    .btn-primary, .btn--primary {
+      background: var(--gradient-brand);
+      color: #f8fbff;
+      box-shadow: 0 10px 28px rgba(37, 99, 235, 0.35);
+    }
+    .btn-primary:hover, .btn--primary:hover {
+      box-shadow: 0 14px 38px rgba(37, 99, 235, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost, .btn--ghost {
+      background: var(--glass-bg);
+      color: var(--color-text);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+    }
+    .btn-ghost:hover, .btn--ghost:hover {
+      border-color: var(--glass-border-hover);
+      background: var(--glass-bg-strong);
+      color: var(--accent-300);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--color-text-dim);
+    }
+    .btn-outline:hover {
+      border-color: var(--glass-border-hover);
+      color: var(--color-text);
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: none;
+      color: var(--accent-400);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0.5rem 0.8rem;
+      transition: color var(--dur-fast) ease;
+    }
+    .btn-reset:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    .btn-sm, .btn--sm { padding: 0.55rem 1.1rem; font-size: 0.85rem; }
+
+    .btn svg.arrow {
+      width: 16px; height: 16px;
+      transition: transform var(--dur-fast) ease;
+    }
+    .btn:hover svg.arrow { transform: translateX(3px); }
+
+    /* Glass Panel */
+    .glass {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border-radius: var(--radius-lg);
+    }
+

@@ -1,0 +1,76 @@
+    /* ==========================================================================
+      Services / Parent Company Section
+      ========================================================================== */
+
+    .services__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .service-card {
+      position: relative;
+      padding: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      min-height: 380px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(18px);
+      transition: all var(--dur-fast) ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--glass-border-hover);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .service-card__icon-wrap {
+      width: 54px; height: 54px;
+      border-radius: var(--radius-md);
+      display: grid;
+      place-items: center;
+      background: var(--gradient-brand-soft);
+      border: 1px solid var(--glass-border);
+      margin-bottom: var(--space-md);
+      color: var(--accent-300);
+    }
+
+    .service-card__icon-wrap svg { width: 26px; height: 26px; }
+
+    .service-card__index {
+      position: absolute;
+      top: var(--space-lg);
+      right: var(--space-lg);
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--color-muted-2);
+    }
+
+    .service-card__title {
+      font-size: var(--fs-h3);
+      margin-bottom: var(--space-2xs);
+    }
+
+    .service-card__desc {
+      font-size: 0.92rem;
+      color: var(--color-text-dim);
+      flex-grow: 1;
+    }
+
+    .service-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: var(--space-lg);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .service-card__tag {
+      display: none !important;
+    }
+

@@ -1,0 +1,389 @@
+    /* ==========================================================================
+      PROJECT PROGRESS TRACKER WIDGET STYLES
+      ========================================================================== */
+
+    .progress-tracker-card {
+      background: var(--glass-bg, rgba(255, 255, 255, 0.04));
+      border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.14));
+      border-radius: 20px;
+      padding: 1.8rem 2rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+    }
+
+    .progress-tracker-card__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+      margin-bottom: 1.5rem;
+    }
+
+    .eyebrow-chip {
+      display: inline-block;
+      font-family: var(--font-mono, monospace);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent-300, #93c5fd);
+      background: rgba(59, 130, 246, 0.12);
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      margin-bottom: 0.4rem;
+    }
+
+    .progress-tracker-card__header-title h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-text, #ffffff);
+    }
+
+    .progress-tracker-card__select-wrap {
+      min-width: 280px;
+    }
+
+    .tracker-select {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tracker-select:hover, .tracker-select:focus {
+      border-color: var(--accent-400, #60a5fa);
+      box-shadow: 0 0 12px rgba(96, 165, 250, 0.25);
+    }
+
+    .tracker-live-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 1.2rem;
+    }
+
+    .tracker-project-level {
+      font-size: 0.75rem;
+      font-family: var(--font-mono, monospace);
+      color: var(--color-text-dim, #94a3b8);
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .tracker-live-summary__project-name h2 {
+      margin: 0.2rem 0 0;
+      font-size: 1.35rem;
+      color: var(--color-text, #ffffff);
+    }
+
+    .tracker-live-summary__status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.4rem;
+    }
+
+    .tracker-updated-tag {
+      font-size: 0.76rem;
+      font-family: var(--font-mono, monospace);
+      color: var(--color-text-dim, #94a3b8);
+    }
+
+    .tracker-live-summary__pic-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pic-label {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--color-text-dim, #94a3b8);
+    }
+
+    .tracker-notes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tracker-note-card {
+      padding: 0.9rem 1.1rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .tracker-note-card--client {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      color: #bfdbfe;
+    }
+
+    .tracker-note-card--team {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #a7f3d0;
+    }
+
+    .tracker-note-card__label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Milestones Grid */
+    .tracker-milestones-wrapper {
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    }
+
+    .tracker-milestones-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+
+    .tracker-milestones-header h4 {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--color-text, #ffffff);
+    }
+
+    .tracker-stage-indicator {
+      font-size: 0.82rem;
+      color: var(--accent-300, #93c5fd);
+      background: rgba(59, 130, 246, 0.1);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .tracker-milestones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .tracker-milestone {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .tracker-milestone:hover {
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .tracker-milestone--done {
+      border-color: rgba(16, 185, 129, 0.35);
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .tracker-milestone--active {
+      border-color: rgba(59, 130, 246, 0.5);
+      background: rgba(59, 130, 246, 0.12);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.2);
+    }
+
+    .tracker-milestone__icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .tracker-milestone--done .tracker-milestone__icon-box {
+      background: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+      font-weight: bold;
+    }
+
+    .tracker-milestone--active .tracker-milestone__icon-box {
+      background: rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      animation: pulseGlow 2s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 4px rgba(59, 130, 246, 0.3); }
+      100% { box-shadow: 0 0 14px rgba(59, 130, 246, 0.7); }
+    }
+
+    .tracker-milestone__num {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.65rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cbd5e1;
+    }
+
+    .tracker-milestone__badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      margin-bottom: 0.3rem;
+      line-height: 1.2;
+    }
+
+    .tracker-milestone__badge--done {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+    }
+
+    .tracker-milestone__badge--active {
+      background: rgba(59, 130, 246, 0.25);
+      color: #93c5fd;
+    }
+
+    .tracker-milestone__badge--pending {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-text-dim, #94a3b8);
+    }
+
+    .tracker-milestone__title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-text, #ffffff);
+    }
+
+    .tracker-milestone__sub {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--accent-300, #93c5fd);
+      margin-bottom: 0.3rem;
+    }
+
+    .tracker-milestone__desc {
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      color: var(--color-text-dim, #cbd5e1);
+    }
+
+    .tracker-footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.8rem;
+      flex-wrap: wrap;
+    }
+
+    /* Tracker Lock Gate */
+    .tracker-lock-gate {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    .tracker-lock-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .tracker-lock-gate h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1.15rem;
+      color: #ffffff;
+    }
+
+    .tracker-lock-gate p {
+      max-width: 48ch;
+      margin: 0 auto 1.2rem;
+      font-size: 0.88rem;
+      color: var(--color-text-dim, #cbd5e1);
+    }
+
+    .tracker-lock-form {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .tracker-input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tracker-input-group input {
+      flex: 1;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(15, 23, 42, 0.8);
+      color: #ffffff;
+      font-size: 0.88rem;
+    }
+
+    .tracker-lock-err {
+      margin-top: 0.6rem;
+      font-size: 0.82rem;
+      color: #f87171;
+    }
+
+    @media (max-width: 640px) {
+      .progress-tracker-card {
+        padding: 1.2rem 1rem;
+      }
+      .btn-block-mobile {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
