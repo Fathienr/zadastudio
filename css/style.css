@@ -16,6 +16,7 @@
       --glass-bg: rgba(255, 255, 255, 0.85);
       --glass-bg-strong: rgba(255, 255, 255, 0.95);
       --glass-border: rgba(203, 213, 225, 0.75);
+      --glass-border-none: rgba(255, 255, 255, 0);
       --glass-border-hover: rgba(37, 99, 235, 0.5);
 
       /* ---- Typography color for Light Mode ---- */
@@ -3035,7 +3036,7 @@
     .reveal.is-revealed,
     [data-reveal].is-revealed {
       opacity: 1 !important;
-      transform: translateY(0) translateX(0) scale(1) !important;
+      transition: transform var(--dur-fast) ease, border-color var(--dur-fast) ease;
     }
 
     @media (prefers-reduced-motion: reduce) {
