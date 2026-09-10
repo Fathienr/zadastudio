@@ -260,7 +260,7 @@
       border: 1px solid var(--glass-border);
       color: var(--color-text-dim);
     }
-
+    .pill--hero { margin: 0 auto 1.2rem auto; }
     .pill span.dot {
       width: 7px;
       height: 7px;

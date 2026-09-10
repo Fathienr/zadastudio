@@ -8,6 +8,10 @@
       gap: var(--space-lg);
     }
 
+    #services.section {
+        padding-top: 0rem;
+    }
+
     .service-card {
       position: relative;
       padding: var(--space-lg);
