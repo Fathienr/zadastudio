@@ -1,0 +1,129 @@
+/* ============================================================================
+   ZADA STUDIO — Borderless Card System
+   Visual direction: clean, premium, border-free surfaces separated by elevation.
+   Keep functional controls, badges, stamps and decorative separators untouched.
+   ============================================================================ */
+
+:root {
+  --shadow-card: 0 10px 30px rgba(30, 55, 95, 0.08);
+  --shadow-card-hover: 0 18px 42px rgba(30, 55, 95, 0.12);
+  --shadow-panel: 0 14px 36px rgba(30, 55, 95, 0.09);
+}
+
+[data-theme="dark"] {
+  --shadow-card: 0 12px 36px rgba(0, 0, 0, 0.28);
+  --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.42);
+  --shadow-panel: 0 16px 44px rgba(0, 0, 0, 0.34);
+}
+
+/* Primary cards */
+.card,
+.service-card,
+.workflow-card,
+.process li,
+.gallery-card,
+.zada-team-card,
+.team-log-card,
+.progress-tracker-card,
+.tracker-live-summary,
+.tracker-note-card,
+.tracker-milestone,
+.auth-card,
+.lock-gate,
+.invoice-form-card,
+.detail-meta,
+.edition-block,
+.theme-disclaimer-card,
+.stat-card,
+.hero-logo-card__inner {
+  border: none !important;
+  box-shadow: var(--shadow-card);
+}
+
+/* Keep cards visually separated without an outline. */
+.card,
+.service-card,
+.workflow-card,
+.process li,
+.gallery-card,
+.zada-team-card,
+.team-log-card,
+.progress-tracker-card,
+.tracker-live-summary,
+.tracker-note-card,
+.tracker-milestone,
+.auth-card,
+.lock-gate,
+.invoice-form-card,
+.detail-meta,
+.edition-block,
+.theme-disclaimer-card,
+.stat-card,
+.hero-logo-card__inner {
+  transition-property: transform, box-shadow, background-color, opacity, filter;
+}
+
+.card:hover,
+.service-card:hover,
+.workflow-card:hover,
+.process li:hover,
+.gallery-card:hover,
+.zada-team-card:hover,
+.team-log-card:hover,
+.tracker-milestone:hover,
+.stat-card:hover,
+.hero-logo-card:hover .hero-logo-card__inner {
+  border-color: transparent !important;
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Larger/floating panels get a little more elevation. */
+.lock-gate,
+.auth-card,
+.invoice-form-card,
+.progress-tracker-card,
+.edition-block,
+.theme-disclaimer-card {
+  box-shadow: var(--shadow-panel);
+}
+
+/* Gallery images/cards stay clean; no outline around the image container. */
+.gallery-card__img-wrap,
+.card-cover {
+  border: none !important;
+}
+
+/* Glass utility: still glass, but without the visible outline. */
+.glass {
+  border: none !important;
+  box-shadow: var(--shadow-card);
+}
+
+/* Hero logo panel: preserve its glow, remove the hard outline. */
+.hero-logo-card__inner {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Do not turn tiny status/utility elements into floating cards. */
+.badge-status,
+.eyebrow-chip,
+.tracker-stage-indicator,
+.tracker-milestone__num,
+.card-tag,
+.card-pop-badge,
+.gallery-badge,
+.receipt-badge-stamp {
+  box-shadow: none;
+}
+
+/* Functional controls intentionally keep their own focus/interaction styling. */
+input,
+select,
+textarea,
+button,
+.btn,
+.navbar__toggle,
+.theme-toggle,
+.btn-action {
+  /* intentionally left to their component styles */
+}

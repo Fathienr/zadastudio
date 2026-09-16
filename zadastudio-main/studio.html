@@ -497,6 +497,7 @@
     }
   </style>
 <!-- Lottie Player Support -->
+<script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.4/dist/lottie-player.js"></script>
 </head>
 <body>
@@ -504,7 +505,7 @@
   <!-- Loader -->
   <div class="loader" id="loader" aria-hidden="true">
     <div class="loader__wrap">
-      <lottie-player src="/js/loader.json" background="transparent" speed="1" style="width: 160px; height: 160px; margin: 0 auto;" loop autoplay></lottie-player>
+      <dotlottie-player src="js/loader.json" background="transparent" speed="1" style="width: 160px; height: 160px; margin: 0 auto;" loop autoplay></dotlottie-player>
       <p class="loader__word"><b>ZADA</b> STUDIO</p>
     </div>
   </div>

@@ -1,0 +1,27 @@
+/*
+ * ZADA STUDIO — Main Stylesheet
+ *
+ * This file is the single entry point for the website CSS.
+ * The actual styles are organized by component in ./split/.
+ * Keep the import order below unchanged unless you know the cascade impact.
+ */
+
+@import url('./split/01-variables.css');
+@import url('./split/02-global.css');
+@import url('./split/03-loader.css');
+@import url('./split/04-buttons.css');
+@import url('./split/05-navbar.css');
+@import url('./split/06-hero.css');
+@import url('./split/07-catalog.css');
+@import url('./split/08-forms-select.css');
+@import url('./split/09-portfolio.css');
+@import url('./split/10-services.css');
+@import url('./split/11-process.css');
+@import url('./split/12-subpages.css');
+@import url('./split/13-admin-ui.css');
+@import url('./split/14-footer-animations.css');
+@import url('./split/15-gallery.css');
+@import url('./split/16-team-report.css');
+@import url('./split/17-progress-tracker.css');
+@import url('./split/18-invoice-print.css');
+@import url('./split/19-borderless.css');
