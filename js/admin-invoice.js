@@ -957,7 +957,7 @@ async function downloadReceiptJpg() {
 
 async function sendWhatsAppInvoice() {
   const phone = document.getElementById("inv-client-phone").value.trim();
-  const name = document.getElementById("inv-client-name").value.trim() || "Kak";
+  const name = toCapitalWords(document.getElementById("inv-client-name").value.trim()) || "Kak";
   const invNumber = document.getElementById("inv-number").value.trim() || "INV";
   const dateStr = formatDisplayDate(document.getElementById("inv-date").value);
   const servedBy = (document.getElementById("inv-served-by")?.value || "Fatih").trim();
@@ -1168,7 +1168,7 @@ function loadInvoiceIntoEditor(invoiceData) {
   if (document.getElementById("inv-served-by")) {
     document.getElementById("inv-served-by").value = invoiceData.servedBy || invoiceData.adminName || "Fatih";
   }
-  document.getElementById("inv-client-name").value = invoiceData.clientName || "";
+  document.getElementById("inv-client-name").value = (invoiceData.clientName || "").toUpperCase();
   document.getElementById("inv-client-phone").value = invoiceData.clientPhone || "";
   document.getElementById("inv-client-email").value = invoiceData.clientEmail || "";
   document.getElementById("inv-client-address").value = invoiceData.clientAddress || "";
@@ -1216,6 +1216,37 @@ function setupEventListeners() {
       el.addEventListener("change", calculateAndRenderPreview);
     }
   });
+
+  // Nama klien: paksa huruf besar semua saat diketik (bukan cuma tampilan),
+  // supaya nama yang tersimpan di Firestore juga konsisten kapital di
+  // mana pun ditampilkan (riwayat, struk cetak, dst). Posisi kursor
+  // dijaga supaya nggak lompat ke akhir teks tiap ketik satu huruf.
+  const clientNameInput = document.getElementById("inv-client-name");
+  if (clientNameInput) {
+    clientNameInput.addEventListener("input", () => {
+      const pos = clientNameInput.selectionStart;
+      clientNameInput.value = clientNameInput.value.toUpperCase();
+      clientNameInput.setSelectionRange(pos, pos);
+    });
+  }
+
+  // No. WhatsApp klien: hanya angka yang boleh masuk. Karakter lain
+  // (spasi, tanda hubung, huruf, dst) langsung dibuang saat diketik atau
+  // ditempel (paste), bukan cuma divalidasi belakangan.
+  const clientPhoneInput = document.getElementById("inv-client-phone");
+  if (clientPhoneInput) {
+    clientPhoneInput.addEventListener("input", () => {
+      const pos = clientPhoneInput.selectionStart;
+      const before = clientPhoneInput.value;
+      const cleaned = before.replace(/[^0-9]/g, "");
+      if (cleaned !== before) {
+        const removedBeforeCursor = before.slice(0, pos).length - before.slice(0, pos).replace(/[^0-9]/g, "").length;
+        clientPhoneInput.value = cleaned;
+        const newPos = Math.max(0, pos - removedBeforeCursor);
+        clientPhoneInput.setSelectionRange(newPos, newPos);
+      }
+    });
+  }
 
   // Add new item button
   document.getElementById("btn-add-item")?.addEventListener("click", addNewItemRow);

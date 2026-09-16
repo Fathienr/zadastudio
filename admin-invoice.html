@@ -233,14 +233,14 @@
                 <label for="inv-client-name" style="font-size: 0.82rem; color: var(--color-text-dim); display: block; margin-bottom: 0.25rem;">
                   Nama Lengkap / Instansi <span style="color:#f87171;">*</span>
                 </label>
-                <input type="text" id="inv-client-name" placeholder="mis. Rizky Ramadhan / SMA 1 Jakarta" required autocapitalize="words" style="width: 100%; padding: 0.5rem 0.7rem; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--color-surface); color: var(--color-text); font-size: 0.88rem; text-transform: capitalize;" />
+                <input type="text" id="inv-client-name" placeholder="mis. Rizky Ramadhan / SMA 1 Jakarta" required autocapitalize="characters" style="width: 100%; padding: 0.5rem 0.7rem; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--color-surface); color: var(--color-text); font-size: 0.88rem; text-transform: uppercase;" />
               </div>
 
               <div>
                 <label for="inv-client-phone" style="font-size: 0.82rem; color: var(--color-text-dim); display: block; margin-bottom: 0.25rem;">
                   No. WhatsApp Klien <span style="color:#f87171;">*</span>
                 </label>
-                <input type="tel" id="inv-client-phone" placeholder="mis. 081234567890" required style="width: 100%; padding: 0.5rem 0.7rem; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--color-surface); color: var(--color-text); font-size: 0.88rem;" />
+                <input type="tel" id="inv-client-phone" placeholder="mis. 081234567890" required inputmode="numeric" pattern="[0-9]*" maxlength="15" style="width: 100%; padding: 0.5rem 0.7rem; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--color-surface); color: var(--color-text); font-size: 0.88rem;" />
               </div>
             </div>
 
