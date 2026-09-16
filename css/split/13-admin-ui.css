@@ -123,7 +123,7 @@
     .btn-action--editions {
       background: rgba(59, 130, 246, 0.12);
       border-color: rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
+      color: --var(--accent-400, #3b82f6);
     }
     .btn-action--editions:hover {
       background: rgba(59, 130, 246, 0.28);
@@ -134,12 +134,12 @@
 
     /* 2. Progress Button (Emerald Theme) */
     .btn-action--progress {
-      background: rgba(16, 185, 129, 0.12);
-      border-color: rgba(16, 185, 129, 0.3);
+      background: rgb(16, 185, 129);
+      border-color: rgba(16, 185, 129, 0);
       color: #6ee7b7;
     }
     .btn-action--progress:hover {
-      background: rgba(16, 185, 129, 0.28);
+      background: rgb(16, 185, 129);
       border-color: #10b981;
       color: #ffffff;
       box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
@@ -147,8 +147,8 @@
 
     /* 3. Edit Button (Amber Theme) */
     .btn-action--edit {
-      background: rgba(245, 158, 11, 0.12);
-      border-color: rgba(245, 158, 11, 0.3);
+      background: rgb(245, 159, 11);
+      border-color: rgba(245, 159, 11, 0);
       color: #fcd34d;
     }
     .btn-action--edit:hover {
@@ -160,8 +160,8 @@
 
     /* 4. Delete Button (Rose/Red Theme) */
     .btn-action--delete {
-      background: rgba(239, 68, 68, 0.12);
-      border-color: rgba(239, 68, 68, 0.3);
+      background: rgb(239, 68, 68);
+      border-color: rgba(239, 68, 68, 0);
       color: #fca5a5;
     }
     .btn-action--delete:hover {
