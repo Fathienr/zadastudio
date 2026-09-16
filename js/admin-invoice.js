@@ -854,9 +854,15 @@ async function saveCurrentInvoice() {
 
   try {
     const saved = await ZadaData.saveInvoice(invoiceData);
-    document.getElementById("inv-id").value = saved.id;
-    showToast(`Struk ${saved.invoiceNumber} berhasil disimpan ke sistem.`);
-    renderInvoiceHistory();
+    await renderInvoiceHistory();
+
+    // Struk sudah aman di Firestore → kosongkan formulir untuk transaksi
+    // berikutnya. Sengaja hanya dijalankan kalau simpan BERHASIL, supaya
+    // data kasir nggak hilang waktu koneksi/rules bermasalah.
+    currentInvoice = null;
+    await resetInvoiceForm();
+    showToast(`Struk ${saved.invoiceNumber} tersimpan. Formulir siap untuk transaksi berikutnya.`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   } catch (err) {
     console.error("Gagal simpan invoice:", err);
     document.getElementById("inv-id").value = invoiceData.id || "";
