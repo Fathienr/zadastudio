@@ -140,13 +140,13 @@
     }
 
     #btn-reset-invoice {
-      background: #0284c7 !important;
+      background: var(--accent300) !important;
       color: #ffffff !important;
       border: none !important;
       border-radius: 8px;
     }
     #btn-reset-invoice:hover {
-      background: #0369a1 !important;
+      background: var(--accent400) !important;
       color: #ffffff !important;
       transform: translateY(-1px);
     }
