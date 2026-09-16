@@ -1,43 +1,68 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Public catalog metadata (name, level, cover, hasPassword flag, and
-    // editions ONLY for non-protected schools). Anyone can browse the
-    // portfolio list and open non-protected schools. Only a signed-in
-    // admin can create/edit/delete.
+    // ------------------------------------------------------------------
+    // Helper
+    // ------------------------------------------------------------------
+    function isAdmin() {
+      return request.auth != null;
+    }
+
+    // ------------------------------------------------------------------
+    // Katalog sekolah (publik). Hanya admin yang bisa tulis.
+    // ------------------------------------------------------------------
     match /schools/{schoolId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update, delete: if isAdmin();
     }
 
-    // Studio Gallery photos rules: readable by public, writable by authenticated admin
+    // ------------------------------------------------------------------
+    // Galeri studio (publik). Hanya admin yang bisa tulis.
+    // ------------------------------------------------------------------
     match /gallery/{photoId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update, delete: if isAdmin();
     }
 
-    // Protected schools' actual editions + progress (perkembangan buku).
-    // Document IDs are "{schoolId}__{sha256(password)}". A visitor can only
-    // successfully fetch this document if they already computed the same
-    // hash, i.e. already knew the correct password. Listing the collection
-    // is not allowed, so it cannot be browsed or enumerated.
+    // ------------------------------------------------------------------
+    // Konten sekolah berpassword. Doc ID = "{schoolId}__{sha256(password)}".
+    // get diizinkan (pengunjung harus sudah tahu hash-nya), list ditutup
+    // supaya koleksi tidak bisa di-enumerate.
+    // ------------------------------------------------------------------
     match /protected/{docId} {
       allow get: if true;
       allow list: if false;
-      allow write: if request.auth != null;
+      allow create, update, delete: if isAdmin();
     }
 
-    // Admin-only bookkeeping (which hash is currently valid per school).
-    // Never exposed to the public.
+    // ------------------------------------------------------------------
+    // Bookkeeping admin (hash password aktif per sekolah). Tidak publik.
+    // ------------------------------------------------------------------
     match /admin_meta/{schoolId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAdmin();
     }
 
-    // Invoices and Receipts: Admin has full read/write, public can view specific receipt by invoiceId
+    // ------------------------------------------------------------------
+    // Invoice & struk digital.
+    //   get   : publik — supaya link struk bisa dibuka klien tanpa login.
+    //   list  : admin saja — riwayat transaksi tidak boleh bisa di-browse.
+    //   write : admin saja.
+    // Inilah blok yang bikin data invoice nyangkut di localStorage kalau
+    // belum ter-publish: tanpa blok ini semua tulis kena default deny.
+    // ------------------------------------------------------------------
     match /invoices/{invoiceId} {
       allow get: if true;
-      allow list, write: if request.auth != null;
+      allow list: if isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ------------------------------------------------------------------
+    // Tutup semua koleksi lain yang belum didefinisikan.
+    // ------------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

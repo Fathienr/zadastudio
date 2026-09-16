@@ -734,7 +734,13 @@ const ZadaData = {
         } catch (e) {}
       }
     } catch (e) {
-      console.warn("Firestore invoices fetch fallback to local cache:", e);
+      console.error(
+        "[ZADA] GAGAL baca invoices dari Firestore:",
+        e.code || "",
+        e.message || e,
+        "— tabel di bawah ini menampilkan cache lokal, BUKAN data pusat."
+      );
+      if (typeof window !== "undefined") window.ZADA_INVOICE_SYNC_ERROR = e.code || String(e);
     }
 
     // 2. Fallback to local cache if offline/disconnected
@@ -788,13 +794,20 @@ const ZadaData = {
       payload.createdAt = new Date().toISOString();
     }
 
-    // Save directly to Firebase Firestore
+    // Save directly to Firebase Firestore.
+    // PENTING: error di sini TIDAK boleh ditelan diam-diam. Kalau ditelan,
+    // invoice cuma masuk localStorage di 1 PC dan kelihatan "berhasil",
+    // padahal PC lain nggak akan pernah lihat datanya.
+    let cloudError = null;
     try {
-      if (typeof db !== "undefined" && db) {
-        await db.collection("invoices").doc(id).set(payload, { merge: true });
+      if (typeof db === "undefined" || !db) {
+        throw new Error("Firebase belum siap (db undefined). Cek urutan <script> di admin-invoice.html.");
       }
+      await db.collection("invoices").doc(id).set(payload, { merge: true });
+      payload._syncedToCloud = true;
     } catch (e) {
-      console.warn("Firestore save invoice error, saving locally:", e);
+      cloudError = e;
+      console.error("[ZADA] GAGAL simpan invoice ke Firestore:", e.code || "", e.message || e);
     }
 
     // Mirror to localStorage cache
@@ -810,6 +823,18 @@ const ZadaData = {
       }
       localStorage.setItem("zada_invoices", JSON.stringify(updated));
     } catch (e) {}
+
+    // Data sudah diamankan di cache lokal, tapi tetap lempar errornya supaya
+    // kasir tahu struk ini BELUM masuk database pusat.
+    if (cloudError) {
+      const err = new Error(
+        cloudError.code === "permission-denied"
+          ? "Ditolak Firestore (permission-denied). Rules untuk koleksi 'invoices' belum ter-deploy atau sesi admin sudah kedaluwarsa."
+          : `Gagal menyimpan ke Firestore: ${cloudError.message || cloudError}`
+      );
+      err.code = cloudError.code;
+      throw err;
+    }
 
     return payload;
   },

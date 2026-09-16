@@ -139,7 +139,8 @@ async function initInvoicePage() {
       db.collection("invoices").onSnapshot(() => {
         renderInvoiceHistory();
       }, (err) => {
-        console.warn("Firestore real-time sync warning:", err);
+        console.error("[ZADA] Realtime sync invoices GAGAL:", err.code || "", err.message || err);
+        showToast(`Sinkronisasi realtime mati (${err.code || "error"}). Tabel bisa ketinggalan data.`);
       });
     } catch (e) {
       console.warn("Could not attach Firestore onSnapshot:", e);
@@ -858,7 +859,9 @@ async function saveCurrentInvoice() {
     renderInvoiceHistory();
   } catch (err) {
     console.error("Gagal simpan invoice:", err);
-    showToast("Terjadi kesalahan saat menyimpan invoice.");
+    document.getElementById("inv-id").value = invoiceData.id || "";
+    showToast(`BELUM tersimpan ke database pusat — ${err.message || "kesalahan tidak diketahui"}`);
+    renderInvoiceHistory();
   } finally {
     if (btnSave) {
       btnSave.disabled = false;
