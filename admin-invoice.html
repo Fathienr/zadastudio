@@ -589,6 +589,19 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Delete invoice confirmation modal (replaces the browser's native confirm()) -->
+<div class="modal-overlay" id="delete-invoice-overlay">
+  <div class="modal" style="width:min(420px, 100%); text-align:center;">
+    <div style="width:52px; height:52px; margin:0 auto 1rem; border-radius:50%; background:rgba(248,113,113,0.12); border:1px solid rgba(248,113,113,0.3); display:flex; align-items:center; justify-content:center; font-size:1.4rem;">🗑️</div>
+    <h2 style="margin-bottom:0.5rem;">Hapus Struk Ini?</h2>
+    <p style="color:var(--color-text-dim); font-size:0.9rem; margin-bottom:1.5rem;">Struk akan dihapus permanen dari riwayat dan database Firebase. Tindakan ini tidak bisa dibatalkan.</p>
+    <div class="modal-actions" style="justify-content:center;">
+      <button type="button" class="btn btn-outline" id="btn-delete-invoice-cancel">Batal</button>
+      <button type="button" class="btn btn-danger" id="btn-delete-invoice-confirm">Ya, Hapus Struk</button>
+    </div>
+  </div>
+</div>
+
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>

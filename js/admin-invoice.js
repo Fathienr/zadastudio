@@ -22,6 +22,56 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
+/* ==========================================================================
+   DELETE INVOICE — custom confirmation modal (menggantikan confirm() bawaan
+   browser yang putih polos, supaya konsisten dengan tema gelap situs)
+   ========================================================================== */
+let pendingDeleteInvoiceId = null;
+
+function openDeleteInvoiceModal(invoiceId) {
+  pendingDeleteInvoiceId = invoiceId;
+  const overlay = document.getElementById("delete-invoice-overlay");
+  if (overlay) overlay.classList.add("open");
+}
+
+function closeDeleteInvoiceModal() {
+  pendingDeleteInvoiceId = null;
+  const overlay = document.getElementById("delete-invoice-overlay");
+  if (overlay) overlay.classList.remove("open");
+}
+
+document.getElementById("btn-delete-invoice-cancel")?.addEventListener("click", closeDeleteInvoiceModal);
+
+// Klik di luar kotak modal (di area overlay gelap) juga membatalkan, sama
+// seperti perilaku modal lain di situs ini.
+document.getElementById("delete-invoice-overlay")?.addEventListener("click", (e) => {
+  if (e.target.id === "delete-invoice-overlay") closeDeleteInvoiceModal();
+});
+
+document.getElementById("btn-delete-invoice-confirm")?.addEventListener("click", async () => {
+  if (!pendingDeleteInvoiceId) return;
+  const id = pendingDeleteInvoiceId;
+  const btn = document.getElementById("btn-delete-invoice-confirm");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Menghapus...";
+  }
+  try {
+    await ZadaData.deleteInvoice(id);
+    showToast("Struk telah dihapus.");
+    renderInvoiceHistory();
+  } catch (err) {
+    console.error("Gagal menghapus invoice:", err);
+    showToast("Gagal menghapus struk dari database.");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Ya, Hapus Struk";
+    }
+    closeDeleteInvoiceModal();
+  }
+});
+
 function formatRupiah(number) {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -1369,11 +1419,7 @@ function setupEventListeners() {
 
       const delBtn = e.target.closest(".btn-del-inv");
       if (delBtn && delBtn.dataset.id) {
-        if (confirm("Apakah Anda yakin ingin menghapus struk ini dari riwayat?")) {
-          await ZadaData.deleteInvoice(delBtn.dataset.id);
-          showToast("Struk telah dihapus.");
-          renderInvoiceHistory();
-        }
+        openDeleteInvoiceModal(delBtn.dataset.id);
       }
     });
   }
