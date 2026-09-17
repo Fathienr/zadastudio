@@ -1,2 +1,0 @@
-# yearbook-zada
-Zada Yearbook 
